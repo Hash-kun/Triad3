@@ -1,0 +1,2744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#050508"/>
+  <title>Triad</title>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #root { height: 100%; width: 100%; overflow: hidden; background: #050508; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useCallback, useRef } = React;
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   APP ICON  (SVG embedded as base64)
+═══════════════════════════════════════════════════════════════════ */
+const APP_ICON_URI = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzBkMGIxZSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzFhMGYyZSIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJjZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzliOGZmZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzZkNWFmZiIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJjZzIiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNiOGFlZmYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4YjdhZmYiLz48L2xpbmVhckdyYWRpZW50PjxmaWx0ZXIgaWQ9InNnIiB4PSItMjAlIiB5PSItMjAlIiB3aWR0aD0iMTQwJSIgaGVpZ2h0PSIxNDAlIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI4IiByZXN1bHQ9ImIiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+PC9kZWZzPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjU2IiBmaWxsPSJ1cmwoI2JnKSIvPjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIzMTAiIHJ4PSIxOTAiIHJ5PSIxMTAiIGZpbGw9IiM2ZDVhZmYiIG9wYWNpdHk9IjAuMDgiLz48ZyBmaWx0ZXI9InVybCgjc2cpIj48cmVjdCB4PSI4MiIgeT0iMzcwIiB3aWR0aD0iODgiIGhlaWdodD0iMTQiIHJ4PSI0IiBmaWxsPSJ1cmwoI2NnKSIvPjxyZWN0IHg9Ijk0IiB5PSIyMDAiIHdpZHRoPSI2NCIgaGVpZ2h0PSIxNzAiIHJ4PSIzIiBmaWxsPSJ1cmwoI2NnKSIgb3BhY2l0eT0iMC44OCIvPjxsaW5lIHgxPSIxMDYiIHkxPSIyMDMiIHgyPSIxMDYiIHkyPSIzNjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjEiIG9wYWNpdHk9IjAuMTgiLz48bGluZSB4MT0iMTE2IiB5MT0iMjAzIiB4Mj0iMTE2IiB5Mj0iMzY4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMS4xIiBvcGFjaXR5PSIwLjE4Ii8+PGxpbmUgeDE9IjEyNiIgeTE9IjIwMyIgeDI9IjEyNiIgeTI9IjM2OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuMSIgb3BhY2l0eT0iMC4xOCIvPjxsaW5lIHgxPSIxMzYiIHkxPSIyMDMiIHgyPSIxMzYiIHkyPSIzNjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjEiIG9wYWNpdHk9IjAuMTgiLz48bGluZSB4MT0iMTQ2IiB5MT0iMjAzIiB4Mj0iMTQ2IiB5Mj0iMzY4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMS4xIiBvcGFjaXR5PSIwLjE4Ii8+PHJlY3QgeD0iODgiIHk9IjE4OCIgd2lkdGg9Ijc2IiBoZWlnaHQ9IjEyIiByeD0iMyIgZmlsbD0idXJsKCNjZzIpIi8+PHBhdGggZD0iTTg4LDE4OCBRNzgsMTc1IDg1LDE2NSBROTIsMTU1IDEwMCwxNjMgUTEwNSwxNzAgOTgsMTc1IFE5MywxNzkgOTAsMTczIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjY2cyKSIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNjQsMTg4IFExNzQsMTc1IDE2NywxNjUgUTE2MCwxNTUgMTUyLDE2MyBRMTQ3LDE3MCAxNTQsMTc1IFExNTksMTc5IDE2MiwxNzMiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNjZzIpIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHJlY3QgeD0iODIiIHk9IjE3OSIgd2lkdGg9Ijg4IiBoZWlnaHQ9IjEwIiByeD0iMiIgZmlsbD0idXJsKCNjZzIpIi8+PC9nPjxnIGZpbHRlcj0idXJsKCNzZykiPjxyZWN0IHg9IjIxMiIgeT0iMzcwIiB3aWR0aD0iODgiIGhlaWdodD0iMTQiIHJ4PSI0IiBmaWxsPSJ1cmwoI2NnMikiLz48cmVjdCB4PSIyMjQiIHk9IjE3OCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjE5MiIgcng9IjMiIGZpbGw9InVybCgjY2cyKSIgb3BhY2l0eT0iMC45MiIvPjxsaW5lIHgxPSIyMzYiIHkxPSIxODEiIHgyPSIyMzYiIHkyPSIzNjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjEiIG9wYWNpdHk9IjAuMjIiLz48bGluZSB4MT0iMjQ2IiB5MT0iMTgxIiB4Mj0iMjQ2IiB5Mj0iMzY4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMS4xIiBvcGFjaXR5PSIwLjIyIi8+PGxpbmUgeDE9IjI1NiIgeTE9IjE4MSIgeDI9IjI1NiIgeTI9IjM2OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuMSIgb3BhY2l0eT0iMC4yMiIvPjxsaW5lIHgxPSIyNjYiIHkxPSIxODEiIHgyPSIyNjYiIHkyPSIzNjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjEiIG9wYWNpdHk9IjAuMjIiLz48bGluZSB4MT0iMjc2IiB5MT0iMTgxIiB4Mj0iMjc2IiB5Mj0iMzY4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMS4xIiBvcGFjaXR5PSIwLjIyIi8+PHJlY3QgeD0iMjE4IiB5PSIxNjYiIHdpZHRoPSI3NiIgaGVpZ2h0PSIxMiIgcng9IjMiIGZpbGw9InVybCgjY2cyKSIvPjxwYXRoIGQ9Ik0yMTgsMTY2IFEyMDgsMTUzIDIxNSwxNDMgUTIyMiwxMzMgMjMwLDE0MSBRMjM1LDE0OCAyMjgsMTUzIFEyMjMsMTU3IDIyMCwxNTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2I4YWVmZiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMjk0LDE2NiBRMzA0LDE1MyAyOTcsMTQzIFEyOTAsMTMzIDI4MiwxNDEgUTI3NywxNDggMjg0LDE1MyBRMjg5LDE1NyAyOTIsMTUxIiBmaWxsPSJub25lIiBzdHJva2U9IiNiOGFlZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHJlY3QgeD0iMjEyIiB5PSIxNTciIHdpZHRoPSI4OCIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9InVybCgjY2cyKSIvPjwvZz48ZyBmaWx0ZXI9InVybCgjc2cpIj48cmVjdCB4PSIzNDIiIHk9IjM3MCIgd2lkdGg9Ijg4IiBoZWlnaHQ9IjE0IiByeD0iNCIgZmlsbD0idXJsKCNjZykiLz48cmVjdCB4PSIzNTQiIHk9IjIwMCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjE3MCIgcng9IjMiIGZpbGw9InVybCgjY2cpIiBvcGFjaXR5PSIwLjg4Ii8+PGxpbmUgeDE9IjM2NiIgeTE9IjIwMyIgeDI9IjM2NiIgeTI9IjM2OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuMSIgb3BhY2l0eT0iMC4xOCIvPjxsaW5lIHgxPSIzNzYiIHkxPSIyMDMiIHgyPSIzNzYiIHkyPSIzNjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjEiIG9wYWNpdHk9IjAuMTgiLz48bGluZSB4MT0iMzg2IiB5MT0iMjAzIiB4Mj0iMzg2IiB5Mj0iMzY4IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMS4xIiBvcGFjaXR5PSIwLjE4Ii8+PGxpbmUgeDE9IjM5NiIgeTE9IjIwMyIgeDI9IjM5NiIgeTI9IjM2OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuMSIgb3BhY2l0eT0iMC4xOCIvPjxsaW5lIHgxPSI0MDYiIHkxPSIyMDMiIHgyPSI0MDYiIHkyPSIzNjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjEiIG9wYWNpdHk9IjAuMTgiLz48cmVjdCB4PSIzNDgiIHk9IjE4OCIgd2lkdGg9Ijc2IiBoZWlnaHQ9IjEyIiByeD0iMyIgZmlsbD0idXJsKCNjZzIpIi8+PHBhdGggZD0iTTM0OCwxODggUTMzOCwxNzUgMzQ1LDE2NSBRMzUyLDE1NSAzNjAsMTYzIFEzNjUsMTcwIDM1OCwxNzUgUTM1MywxNzkgMzUwLDE3MyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2NnMikiIHN0cm9rZS13aWR0aD0iMy41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNNDI0LDE4OCBRNDM0LDE3NSA0MjcsMTY1IFE0MjAsMTU1IDQxMiwxNjMgUTQwNywxNzAgNDE0LDE3NSBRNDE5LDE3OSA0MjIsMTczIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjY2cyKSIgc3Ryb2tlLXdpZHRoPSIzLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxyZWN0IHg9IjM0MiIgeT0iMTc5IiB3aWR0aD0iODgiIGhlaWdodD0iMTAiIHJ4PSIyIiBmaWxsPSJ1cmwoI2NnMikiLz48L2c+PHJlY3QgeD0iNzIiIHk9IjM4NCIgd2lkdGg9IjM2OCIgaGVpZ2h0PSI1IiByeD0iMi41IiBmaWxsPSJ1cmwoI2NnKSIgb3BhY2l0eT0iMC40NSIvPjxwb2x5Z29uIHBvaW50cz0iMjU2LDExOCAyNTksMTEwIDI2MiwxMTggMjU5LDEyNiIgZmlsbD0iI2E3OGJmYSIgb3BhY2l0eT0iMC44NSIvPjxwb2x5Z29uIHBvaW50cz0iMjQ5LDExOCAyNTYsMTE0IDI2MywxMTggMjU2LDEyMiIgZmlsbD0iI2E3OGJmYSIgb3BhY2l0eT0iMC44NSIvPjxwb2x5Z29uIHBvaW50cz0iMTM0LDEwNiAxMzYsMTAxIDEzOCwxMDYgMTM2LDExMSIgZmlsbD0iI2ZiYmYyNCIgb3BhY2l0eT0iMC43Ii8+PHBvbHlnb24gcG9pbnRzPSIzNzgsMTEyIDM4MCwxMDcgMzgyLDExMiAzODAsMTE3IiBmaWxsPSIjMzRkMzk5IiBvcGFjaXR5PSIwLjciLz48L3N2Zz4=";
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL STYLES
+═══════════════════════════════════════════════════════════════════ */
+
+const GS = ({ theme }) => {
+  const t = THEMES[theme] || THEMES.cosmic;
+  useEffect(() => {
+    // Set favicon
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+    link.href = APP_ICON_URI;
+    link.type = 'image/svg+xml';
+    // Set title
+    document.title = 'Triad';
+  }, []);
+  return (
+    <style>{`
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; background: ${t.bg}; }
+      ::-webkit-scrollbar { width: 3px; }
+      ::-webkit-scrollbar-thumb { background: ${t.accent}44; border-radius: 2px; }
+      .root {
+        font-family: 'Outfit', sans-serif;
+        background: ${t.bg};
+        height: 100dvh;
+        max-width: 430px;
+        margin: 0 auto;
+        color: ${t.text};
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .orb1 {
+        position: fixed; top: -80px; left: -60px;
+        width: 280px; height: 280px; border-radius: 50%;
+        background: radial-gradient(circle, ${t.accent}28 0%, transparent 70%);
+        pointer-events: none; z-index: 0;
+        animation: orb1 10s ease-in-out infinite alternate;
+      }
+      .orb2 {
+        position: fixed; bottom: 60px; right: -40px;
+        width: 240px; height: 240px; border-radius: 50%;
+        background: radial-gradient(circle, ${t.accent2}1e 0%, transparent 70%);
+        pointer-events: none; z-index: 0;
+        animation: orb2 13s ease-in-out infinite alternate;
+      }
+      @keyframes orb1 { from{transform:translate(0,0) scale(1)} to{transform:translate(30px,25px) scale(1.1)} }
+      @keyframes orb2 { from{transform:translate(0,0)} to{transform:translate(-20px,-18px) scale(1.12)} }
+      .page { position: relative; z-index: 1; padding-bottom: 96px; }
+      .glass {
+        background: ${t.glass};
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid ${t.border};
+        border-radius: 18px;
+      }
+      .glass2 {
+        background: ${t.glass2};
+        backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+        border: 1px solid ${t.border2};
+        border-radius: 20px;
+      }
+      .hcard { transition: transform .18s ease, box-shadow .18s ease; }
+      .hcard:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(0,0,0,0.3); }
+      .bp { transition: transform .1s ease; }
+      .bp:active { transform: scale(0.91); }
+      .logbtn { transition: all .18s ease; }
+      .logbtn:hover:not(:disabled) { transform: scale(1.1); }
+      .logbtn:active:not(:disabled) { transform: scale(0.88); }
+
+      /* ── PAGE ENTER ANIMATION ── */
+      @keyframes pageEnter {
+        from { opacity:0; transform: translateY(18px) scale(0.98); }
+        to   { opacity:1; transform: translateY(0)    scale(1); }
+      }
+      .page { animation: pageEnter .32s cubic-bezier(.22,1,.36,1) forwards; }
+
+      /* ── SLIDE UP ── */
+      @keyframes slideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+      .su { animation: slideUp .28s ease forwards; }
+
+      /* ── SLIDE IN FROM RIGHT ── */
+      @keyframes slideRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+      .sr { animation: slideRight .26s cubic-bezier(.22,1,.36,1) forwards; }
+
+      /* ── STAGGER ── */
+      .stagger>* { opacity:0; animation: slideUp .28s ease forwards; }
+      .stagger>*:nth-child(1){animation-delay:.04s}.stagger>*:nth-child(2){animation-delay:.08s}
+      .stagger>*:nth-child(3){animation-delay:.12s}.stagger>*:nth-child(4){animation-delay:.16s}
+      .stagger>*:nth-child(5){animation-delay:.20s}.stagger>*:nth-child(6){animation-delay:.24s}
+      .stagger>*:nth-child(7){animation-delay:.28s}.stagger>*:nth-child(8){animation-delay:.32s}
+
+      /* ── TOAST ── */
+      @keyframes toastIn {
+        from { opacity:0; transform:translateX(-50%) translateY(-12px) scale(0.9); }
+        to   { opacity:1; transform:translateX(-50%) translateY(0)     scale(1); }
+      }
+      @keyframes toastOut {
+        from { opacity:1; transform:translateX(-50%) translateY(0)  scale(1); }
+        to   { opacity:0; transform:translateX(-50%) translateY(-8px) scale(0.95); }
+      }
+      .toast-in  { animation: toastIn  .22s cubic-bezier(.34,1.3,.64,1) forwards; }
+      .toast-out { animation: toastOut .18s ease forwards; }
+
+      /* ── SHEET ── */
+      @keyframes sheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+      .sheet { animation: sheetUp .28s cubic-bezier(.34,1.26,.64,1); }
+
+      /* ── POP IN (achievement unlock) ── */
+      @keyframes popIn {
+        0%   { opacity:0; transform:scale(0.4) rotate(-8deg); }
+        60%  { opacity:1; transform:scale(1.18) rotate(3deg); }
+        80%  { transform:scale(0.95) rotate(-1deg); }
+        100% { opacity:1; transform:scale(1) rotate(0deg); }
+      }
+      .pop-in { animation: popIn .55s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+      /* ── ACHIEVEMENT GLOW PULSE ── */
+      @keyframes achGlow {
+        0%,100% { box-shadow: 0 0 10px ${t.accent}44; }
+        50%      { box-shadow: 0 0 28px ${t.accent}99, 0 0 60px ${t.accent}33; }
+      }
+      .ach-unlocked { animation: achGlow 2.4s ease-in-out infinite; }
+
+      /* ── PULSE ── */
+      @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+      .pulse { animation: pulse 1.6s ease-in-out infinite; }
+
+      /* ── SPIN ── */
+      @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+      .spin { animation: spin 1s linear infinite; }
+
+      /* ── HABIT LOG RIPPLE ── */
+      @keyframes ripple {
+        0%   { transform:scale(1);   opacity:1; }
+        100% { transform:scale(2.4); opacity:0; }
+      }
+      .ripple { animation: ripple .45s ease-out forwards; }
+
+      /* ── FLOAT ── */
+      @keyframes float {
+        0%,100% { transform: translateY(0); }
+        50%      { transform: translateY(-5px); }
+      }
+      .float { animation: float 3s ease-in-out infinite; }
+
+      /* ── NUMBER COUNT UP ── */
+      @keyframes countUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+      .count-up { animation: countUp .4s ease forwards; }
+
+      /* ── SHINE SWEEP ── */
+      @keyframes shine {
+        0%   { background-position: -200% center; }
+        100% { background-position:  200% center; }
+      }
+
+      /* ── SCALE IN (for modals/sheets) ── */
+      @keyframes scaleIn {
+        from { opacity:0; transform:scale(0.94); }
+        to   { opacity:1; transform:scale(1); }
+      }
+      .scale-in { animation: scaleIn .2s cubic-bezier(.22,1,.36,1) forwards; }
+
+      /* ── PROGRESS BAR FILL ANIMATION ── */
+      @keyframes fillBar { from{width:0%} }
+      .fill-bar { animation: fillBar .8s cubic-bezier(.4,0,.2,1) forwards; }
+
+      /* ── BOUNCE IN (for check/completion) ── */
+      @keyframes bounceIn {
+        0%   { transform:scale(0); }
+        55%  { transform:scale(1.25); }
+        80%  { transform:scale(0.92); }
+        100% { transform:scale(1); }
+      }
+      .bounce-in { animation: bounceIn .4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+      /* ── GLOW BREATHE (active streak cards) ── */
+      @keyframes glowBreathe {
+        0%,100% { box-shadow: 0 0 8px ${t.accent}22; }
+        50% { box-shadow: 0 0 22px ${t.accent}55, 0 4px 20px rgba(0,0,0,0.3); }
+      }
+      .streak-glow { animation: glowBreathe 2.8s ease-in-out infinite; }
+
+      input:focus, select:focus, textarea:focus { outline: none; border-color: ${t.accent}66 !important; box-shadow: 0 0 0 3px ${t.accent}14 !important; }
+      select option { background: ${t.surface}; color: ${t.text}; }
+      .tab-active { background: ${t.accent}22; color: ${t.accent}; border-color: ${t.accent}44; }
+
+      /* ── HABIT CARD LOG DONE FLASH ── */
+      @keyframes doneFlash {
+        0%   { background: ${t.glass}; }
+        40%  { background: ${t.accent}22; }
+        100% { background: ${t.glass}; }
+      }
+      .done-flash { animation: doneFlash .5s ease; }
+
+      /* ── NAV ACTIVE TAB BOUNCE ── */
+      @keyframes navBounce {
+        0%,100% { transform: translateY(0); }
+        40%      { transform: translateY(-4px); }
+      }
+      .nav-active { animation: navBounce .3s ease; }
+    `}</style>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   THEMES  (UI Customization Feature)
+═══════════════════════════════════════════════════════════════════ */
+const THEMES = {
+  cosmic: {
+    name:"Cosmic",emoji:"🌌",
+    bg:"#050508", surface:"#110f1e", text:"#f0eeff", muted:"rgba(240,238,255,0.4)",
+    accent:"#a78bfa", accent2:"#22d3ee", accent3:"#f472b6",
+    glass:"rgba(255,255,255,0.04)", glass2:"rgba(255,255,255,0.07)",
+    border:"rgba(255,255,255,0.08)", border2:"rgba(255,255,255,0.12)",
+    card:"rgba(255,255,255,0.05)", nav:"rgba(12,10,22,0.92)",
+  },
+  void: {
+    name:"Void",emoji:"⬛",
+    bg:"#000000", surface:"#0a0a0a", text:"#e8e8e8", muted:"rgba(232,232,232,0.35)",
+    accent:"#ffffff", accent2:"#888888", accent3:"#555555",
+    glass:"rgba(255,255,255,0.03)", glass2:"rgba(255,255,255,0.06)",
+    border:"rgba(255,255,255,0.07)", border2:"rgba(255,255,255,0.1)",
+    card:"rgba(255,255,255,0.04)", nav:"rgba(0,0,0,0.97)",
+  },
+  abyss: {
+    name:"Abyss",emoji:"🌑",
+    bg:"#020204", surface:"#0d0d14", text:"#c8c0ff", muted:"rgba(200,192,255,0.3)",
+    accent:"#6d5aff", accent2:"#9d4edd", accent3:"#ff6b6b",
+    glass:"rgba(109,90,255,0.04)", glass2:"rgba(109,90,255,0.08)",
+    border:"rgba(109,90,255,0.1)", border2:"rgba(109,90,255,0.18)",
+    card:"rgba(109,90,255,0.05)", nav:"rgba(2,2,4,0.97)",
+  },
+  aurora: {
+    name:"Aurora",emoji:"🌿",
+    bg:"#030d0a", surface:"#0a1f1a", text:"#e8fff5", muted:"rgba(232,255,245,0.4)",
+    accent:"#34d399", accent2:"#22d3ee", accent3:"#a78bfa",
+    glass:"rgba(52,211,153,0.05)", glass2:"rgba(52,211,153,0.09)",
+    border:"rgba(52,211,153,0.12)", border2:"rgba(52,211,153,0.2)",
+    card:"rgba(52,211,153,0.06)", nav:"rgba(3,13,10,0.92)",
+  },
+  ember: {
+    name:"Ember",emoji:"🔥",
+    bg:"#080403", surface:"#1a0f08", text:"#fff5ee", muted:"rgba(255,245,238,0.4)",
+    accent:"#fb923c", accent2:"#f43f5e", accent3:"#fbbf24",
+    glass:"rgba(251,146,60,0.05)", glass2:"rgba(251,146,60,0.09)",
+    border:"rgba(251,146,60,0.12)", border2:"rgba(251,146,60,0.2)",
+    card:"rgba(251,146,60,0.06)", nav:"rgba(8,4,3,0.92)",
+  },
+  arctic: {
+    name:"Arctic",emoji:"❄️",
+    bg:"#f0f4f8", surface:"#ffffff", text:"#1a1f2e", muted:"rgba(26,31,46,0.45)",
+    accent:"#3b82f6", accent2:"#06b6d4", accent3:"#8b5cf6",
+    glass:"rgba(59,130,246,0.06)", glass2:"rgba(255,255,255,0.9)",
+    border:"rgba(59,130,246,0.14)", border2:"rgba(59,130,246,0.22)",
+    card:"rgba(255,255,255,0.8)", nav:"rgba(240,244,248,0.95)",
+  },
+  sakura: {
+    name:"Sakura",emoji:"🌸",
+    bg:"#0f060c", surface:"#1e0d18", text:"#ffe8f5", muted:"rgba(255,232,245,0.4)",
+    accent:"#f472b6", accent2:"#e879f9", accent3:"#fbbf24",
+    glass:"rgba(244,114,182,0.05)", glass2:"rgba(244,114,182,0.09)",
+    border:"rgba(244,114,182,0.12)", border2:"rgba(244,114,182,0.2)",
+    card:"rgba(244,114,182,0.06)", nav:"rgba(15,6,12,0.92)",
+  },
+  neon: {
+    name:"Neon",emoji:"⚡",
+    bg:"#020810", surface:"#060f1a", text:"#e0f7ff", muted:"rgba(224,247,255,0.38)",
+    accent:"#00f5ff", accent2:"#ff00ff", accent3:"#00ff88",
+    glass:"rgba(0,245,255,0.04)", glass2:"rgba(0,245,255,0.08)",
+    border:"rgba(0,245,255,0.12)", border2:"rgba(0,245,255,0.2)",
+    card:"rgba(0,245,255,0.05)", nav:"rgba(2,8,16,0.96)",
+  },
+};
+
+const ACCENT_SIZES = { compact:"compact", normal:"normal", comfortable:"comfortable" };
+const FONT_SIZES   = { small:12, normal:14, large:16 };
+
+/* ═══════════════════════════════════════════════════════════════════
+   CONSTANTS & DEFAULTS
+═══════════════════════════════════════════════════════════════════ */
+const HABIT_CATS  = ["health","fitness","learning","mindfulness","social","work","finance","creativity","sleep","nutrition","productivity","sports","art","music","coding","reading","meditation","gratitude"];
+const EXP_CATS    = ["food","transport","shopping","health","entertainment","bills","savings","other"];
+const EXP_EMOJI   = { food:"🍜",transport:"🚌",shopping:"🛍️",health:"💊",entertainment:"🎮",bills:"📄",savings:"🏦",other:"📦" };
+const PILLARS     = {
+  power:  { icon:"⚡", label:"Power",  glow:"#fb923c" },
+  wealth: { icon:"💰", label:"Wealth", glow:"#a3e635" },
+  wisdom: { icon:"🔮", label:"Wisdom", glow:"#a78bfa" },
+};
+const MOOD_OPTS   = [{ v:5,l:"Amazing",e:"🤩" },{ v:4,l:"Good",e:"😊" },{ v:3,l:"Okay",e:"😐" },{ v:2,l:"Bad",e:"😞" },{ v:1,l:"Awful",e:"😫" }];
+const QUOTE_LIST  = [
+  "Small steps every day lead to big changes.",
+  "Discipline is choosing between what you want now and what you want most.",
+  "You don't rise to the level of your goals, you fall to the level of your systems.",
+  "The secret of your future is hidden in your daily routine.",
+  "Progress, not perfection.",
+  "Win the morning, win the day.",
+  "One habit at a time. One day at a time.",
+  "Your habits shape your identity.",
+];
+
+const todayISO = () => new Date().toISOString().slice(0,10);
+const fmtINR   = n => `₹${Number(n).toLocaleString("en-IN")}`;
+const fmtDate  = d => new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short"});
+const last7Days = () => Array.from({length:7},(_,i)=>{ const d=new Date();d.setDate(d.getDate()-(6-i));return d.toISOString().slice(0,10); });
+const last30Days= () => Array.from({length:30},(_,i)=>{ const d=new Date();d.setDate(d.getDate()-(29-i));return d.toISOString().slice(0,10); });
+
+const DEFAULT_HABITS = [
+  {id:1,name:"Morning Run",icon:"🏃",color:"#22d3ee",category:"fitness",    target:1,logs:{},streak:3,bestStreak:5,reminder:"07:00",notes:""},
+  {id:2,name:"Read 30 min",icon:"📚",color:"#a78bfa",category:"learning",   target:1,logs:{},streak:7,bestStreak:7,reminder:"21:00",notes:""},
+  {id:3,name:"Drink Water", icon:"💧",color:"#a3e635",category:"health",     target:8,logs:{},streak:1,bestStreak:3,reminder:"",    notes:""},
+  {id:4,name:"Meditate",    icon:"🧘",color:"#f472b6",category:"mindfulness",target:1,logs:{},streak:5,bestStreak:9,reminder:"08:00",notes:""},
+];
+// Achievement tiers: starter(S) | bronze(B) | silver(Sv) | gold(G) | platinum(P) | legendary(L) | pillar(X)
+const DEFAULT_ACH = [
+  // ── STARTER ── first actions
+  {id:"first",     cat:"starter", icon:"🌱",title:"First Step",       desc:"Log your very first habit",              unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"day1",      cat:"starter", icon:"☀️",title:"Day One",          desc:"Complete any habit on your first day",   unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"setup",     cat:"starter", icon:"🔧",title:"Builder",          desc:"Create 3 habits",                        unlocked:false,progress:0,target:3,    rarity:"starter"},
+  {id:"remind",    cat:"starter", icon:"⏰",title:"Scheduled",        desc:"Set a reminder on any habit",            unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"mood1",     cat:"starter", icon:"😊",title:"Feeling Good",     desc:"Log your first mood",                    unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"water1",    cat:"starter", icon:"💧",title:"First Sip",        desc:"Track water for the first time",         unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"journal1",  cat:"starter", icon:"📝",title:"Dear Diary",       desc:"Write your first journal entry",         unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"focus1",    cat:"starter", icon:"⏱️",title:"First Focus",      desc:"Complete your first focus session",      unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"spend1",    cat:"starter", icon:"💸",title:"Money Aware",      desc:"Log your first expense",                 unlocked:false,progress:0,target:1,    rarity:"starter"},
+  {id:"goal1",     cat:"starter", icon:"🎯",title:"Goal Setter",      desc:"Create your first custom goal",          unlocked:false,progress:0,target:1,    rarity:"starter"},
+
+  // ── BRONZE ── early momentum
+  {id:"l10",       cat:"logs",    icon:"🥉",title:"Getting Started",  desc:"Log 10 habit completions",               unlocked:false,progress:0,target:10,   rarity:"bronze"},
+  {id:"s3",        cat:"streak",  icon:"🌿",title:"Three Day Rule",   desc:"Maintain a 3-day streak",                unlocked:false,progress:0,target:3,    rarity:"bronze"},
+  {id:"p3",        cat:"perfect", icon:"🌟",title:"Triple Crown",     desc:"Get 3 perfect days",                     unlocked:false,progress:0,target:3,    rarity:"bronze"},
+  {id:"w3",        cat:"water",   icon:"🫗",title:"Hydrated",         desc:"Hit water goal 3 days in a row",         unlocked:false,progress:0,target:3,    rarity:"bronze"},
+  {id:"f5",        cat:"focus",   icon:"🧠",title:"Deep Thinker",     desc:"Complete 5 focus sessions",              unlocked:false,progress:0,target:5,    rarity:"bronze"},
+  {id:"j5",        cat:"journal", icon:"🖊️",title:"Reflective",       desc:"Write 5 journal entries",                unlocked:false,progress:0,target:5,    rarity:"bronze"},
+  {id:"e10",       cat:"spend",   icon:"📊",title:"Conscious Spender",desc:"Track 10 expenses",                      unlocked:false,progress:0,target:10,   rarity:"bronze"},
+  {id:"h4",        cat:"habits",  icon:"🎨",title:"Diversified",      desc:"Have habits in 4 different categories",  unlocked:false,progress:0,target:4,    rarity:"bronze"},
+  {id:"m5",        cat:"mood",    icon:"😄",title:"Mood Logger",      desc:"Log mood 5 days in a row",               unlocked:false,progress:0,target:5,    rarity:"bronze"},
+  {id:"l50",       cat:"logs",    icon:"💪",title:"Half Century",     desc:"Log 50 habit completions",               unlocked:false,progress:0,target:50,   rarity:"bronze"},
+
+  // ── SILVER ── building real habits
+  {id:"s7",        cat:"streak",  icon:"🔥",title:"Week Warrior",     desc:"Achieve a 7-day streak",                 unlocked:false,progress:0,target:7,    rarity:"silver"},
+  {id:"p7",        cat:"perfect", icon:"💎",title:"Diamond Week",     desc:"Get 7 perfect days",                     unlocked:false,progress:0,target:7,    rarity:"silver"},
+  {id:"l100",      cat:"logs",    icon:"💯",title:"Century",          desc:"Log 100 habit completions",              unlocked:false,progress:0,target:100,  rarity:"silver"},
+  {id:"f20",       cat:"focus",   icon:"🎯",title:"Focus Machine",    desc:"Complete 20 focus sessions",             unlocked:false,progress:0,target:20,   rarity:"silver"},
+  {id:"j14",       cat:"journal", icon:"📖",title:"Two Week Writer",  desc:"Write journal entries 14 days straight", unlocked:false,progress:0,target:14,   rarity:"silver"},
+  {id:"s14",       cat:"streak",  icon:"🌊",title:"Fortnight Flow",   desc:"Maintain a 14-day streak",               unlocked:false,progress:0,target:14,   rarity:"silver"},
+  {id:"p14",       cat:"perfect", icon:"✨",title:"Two Week Perfection",desc:"Get 14 perfect days",                  unlocked:false,progress:0,target:14,   rarity:"silver"},
+  {id:"w30",       cat:"water",   icon:"🌊",title:"Water Month",      desc:"Hit water goal 30 times",                unlocked:false,progress:0,target:30,   rarity:"silver"},
+  {id:"e50",       cat:"spend",   icon:"🧾",title:"Budget Hawk",      desc:"Track 50 expenses",                      unlocked:false,progress:0,target:50,   rarity:"silver"},
+  {id:"h6",        cat:"habits",  icon:"🌈",title:"Rainbow Builder",  desc:"Have habits in 6 different categories",  unlocked:false,progress:0,target:6,    rarity:"silver"},
+  {id:"fm30",      cat:"focus",   icon:"🕐",title:"Focus Hour",       desc:"Accumulate 30 total focus session hours",unlocked:false,progress:0,target:30,   rarity:"silver"},
+  {id:"hab5",      cat:"habits",  icon:"🏗️",title:"Habit Architect",  desc:"Have 5 active habits simultaneously",    unlocked:false,progress:0,target:5,    rarity:"silver"},
+
+  // ── GOLD ── serious commitment
+  {id:"s30",       cat:"streak",  icon:"🏆",title:"Month Master",     desc:"Achieve a 30-day streak",                unlocked:false,progress:0,target:30,   rarity:"gold"},
+  {id:"p30",       cat:"perfect", icon:"🌙",title:"Perfect Month",    desc:"Get 30 perfect days",                    unlocked:false,progress:0,target:30,   rarity:"gold"},
+  {id:"l250",      cat:"logs",    icon:"🚀",title:"Rocket",           desc:"Log 250 habit completions",              unlocked:false,progress:0,target:250,  rarity:"gold"},
+  {id:"f50",       cat:"focus",   icon:"🔬",title:"Deep Work Pro",    desc:"Complete 50 focus sessions",             unlocked:false,progress:0,target:50,   rarity:"gold"},
+  {id:"j30",       cat:"journal", icon:"📚",title:"Journal Keeper",   desc:"Write 30 journal entries",               unlocked:false,progress:0,target:30,   rarity:"gold"},
+  {id:"s60",       cat:"streak",  icon:"⚡",title:"Two Month Streak", desc:"Maintain a 60-day streak",               unlocked:false,progress:0,target:60,   rarity:"gold"},
+  {id:"p60",       cat:"perfect", icon:"🎖️",title:"Two Month Perfect",desc:"Get 60 perfect days",                   unlocked:false,progress:0,target:60,   rarity:"gold"},
+  {id:"e100",      cat:"spend",   icon:"💰",title:"Finance Tracker",  desc:"Track 100 expenses",                     unlocked:false,progress:0,target:100,  rarity:"gold"},
+  {id:"w90",       cat:"water",   icon:"💦",title:"Hydration Expert", desc:"Hit water goal 90 times",                unlocked:false,progress:0,target:90,   rarity:"gold"},
+  {id:"fm100",     cat:"focus",   icon:"⏳",title:"100 Focus Hours",  desc:"Accumulate 100 focus session hours",     unlocked:false,progress:0,target:100,  rarity:"gold"},
+  {id:"allcat",    cat:"habits",  icon:"🎭",title:"Category Master",  desc:"Have habits in all 8 categories",        unlocked:false,progress:0,target:8,    rarity:"gold"},
+  {id:"hab10",     cat:"habits",  icon:"🕸️",title:"Habit Web",        desc:"Have 10 active habits simultaneously",   unlocked:false,progress:0,target:10,   rarity:"gold"},
+  {id:"l500",      cat:"logs",    icon:"🎇",title:"500 Club",         desc:"Log 500 habit completions",              unlocked:false,progress:0,target:500,  rarity:"gold"},
+  {id:"s90",       cat:"streak",  icon:"🌠",title:"Three Month Streak",desc:"Maintain a 90-day streak",              unlocked:false,progress:0,target:90,   rarity:"gold"},
+
+  // ── PLATINUM ── elite discipline
+  {id:"s100",      cat:"streak",  icon:"🔱",title:"Century Streak",   desc:"Maintain a 100-day streak",              unlocked:false,progress:0,target:100,  rarity:"platinum"},
+  {id:"p100",      cat:"perfect", icon:"🏅",title:"100 Perfect Days", desc:"Get 100 perfect days",                   unlocked:false,progress:0,target:100,  rarity:"platinum"},
+  {id:"l1000",     cat:"logs",    icon:"🌌",title:"1000 Logs",        desc:"Log 1,000 habit completions",            unlocked:false,progress:0,target:1000, rarity:"platinum"},
+  {id:"f100",      cat:"focus",   icon:"🧬",title:"Focus Scientist",  desc:"Complete 100 focus sessions",            unlocked:false,progress:0,target:100,  rarity:"platinum"},
+  {id:"j100",      cat:"journal", icon:"🗒️",title:"Prolific Writer",  desc:"Write 100 journal entries",              unlocked:false,progress:0,target:100,  rarity:"platinum"},
+  {id:"s180",      cat:"streak",  icon:"🌺",title:"Half Year Streak", desc:"Maintain a 180-day streak",              unlocked:false,progress:0,target:180,  rarity:"platinum"},
+  {id:"p180",      cat:"perfect", icon:"🔮",title:"180 Perfect Days", desc:"Get 180 perfect days",                   unlocked:false,progress:0,target:180,  rarity:"platinum"},
+  {id:"e500",      cat:"spend",   icon:"🏦",title:"Finance Guru",     desc:"Track 500 expenses",                     unlocked:false,progress:0,target:500,  rarity:"platinum"},
+  {id:"w365",      cat:"water",   icon:"🌊",title:"Year of Hydration",desc:"Hit water goal 365 times total",         unlocked:false,progress:0,target:365,  rarity:"platinum"},
+  {id:"fm365",     cat:"focus",   icon:"🧘",title:"365 Focus Hours",  desc:"Accumulate 365 total focus hours",       unlocked:false,progress:0,target:365,  rarity:"platinum"},
+  {id:"l2000",     cat:"logs",    icon:"🌟",title:"2000 Logs",        desc:"Log 2,000 habit completions",            unlocked:false,progress:0,target:2000, rarity:"platinum"},
+  {id:"s365",      cat:"streak",  icon:"🎋",title:"Year Streak",      desc:"Maintain a 365-day streak. One full year.",unlocked:false,progress:0,target:365, rarity:"platinum"},
+
+  // ── SPECIAL CATEGORY BADGES ──
+  {id:"hlt10",     cat:"health",  icon:"❤️",title:"Health Devotee",   desc:"Log health habits 10 times",             unlocked:false,progress:0,target:10,   rarity:"silver"},
+  {id:"fit10",     cat:"fitness", icon:"🏋️",title:"Fitness Freak",    desc:"Log fitness habits 10 times",            unlocked:false,progress:0,target:10,   rarity:"silver"},
+  {id:"lrn10",     cat:"learn",   icon:"🎓",title:"Knowledge Seeker", desc:"Log learning habits 10 times",           unlocked:false,progress:0,target:10,   rarity:"silver"},
+  {id:"mnd10",     cat:"mind",    icon:"🧘",title:"Inner Peace",      desc:"Log mindfulness habits 10 times",        unlocked:false,progress:0,target:10,   rarity:"silver"},
+  {id:"hlt50",     cat:"health",  icon:"💗",title:"Health Champion",  desc:"Log health habits 50 times",             unlocked:false,progress:0,target:50,   rarity:"gold"},
+  {id:"fit50",     cat:"fitness", icon:"🏆",title:"Iron Will",        desc:"Log fitness habits 50 times",            unlocked:false,progress:0,target:50,   rarity:"gold"},
+  {id:"lrn50",     cat:"learn",   icon:"🦉",title:"Scholar",          desc:"Log learning habits 50 times",           unlocked:false,progress:0,target:50,   rarity:"gold"},
+  {id:"mnd50",     cat:"mind",    icon:"☮️",title:"Zen Master",       desc:"Log mindfulness habits 50 times",        unlocked:false,progress:0,target:50,   rarity:"gold"},
+  {id:"hlt200",    cat:"health",  icon:"⚕️",title:"Health Immortal",  desc:"Log health habits 200 times",            unlocked:false,progress:0,target:200,  rarity:"platinum"},
+  {id:"fit200",    cat:"fitness", icon:"🦾",title:"Bionic",           desc:"Log fitness habits 200 times",           unlocked:false,progress:0,target:200,  rarity:"platinum"},
+
+  // ── COMBO / SPECIAL ──
+  {id:"earlybird", cat:"special", icon:"🌅",title:"Early Bird",       desc:"Log a habit before 7am (set reminder ≤ 7am)", unlocked:false,progress:0,target:1, rarity:"silver"},
+  {id:"nightowl",  cat:"special", icon:"🦉",title:"Night Owl",        desc:"Log a habit with reminder after 10pm",   unlocked:false,progress:0,target:1,    rarity:"silver"},
+  {id:"consistent",cat:"special", icon:"📐",title:"Consistent",       desc:"Log at least 1 habit every day for 30 days",unlocked:false,progress:0,target:30, rarity:"gold"},
+  {id:"comeback",  cat:"special", icon:"🔄",title:"Comeback Kid",     desc:"Resume a streak after breaking it",      unlocked:false,progress:0,target:1,    rarity:"bronze"},
+  {id:"overachiever",cat:"special",icon:"🎯",title:"Overachiever",    desc:"Beat daily target by 2x for 7 days",     unlocked:false,progress:0,target:7,    rarity:"gold"},
+  {id:"mindmoney", cat:"special", icon:"🧩",title:"Mind & Money",     desc:"Log mindfulness + track an expense same day",unlocked:false,progress:0,target:5, rarity:"silver"},
+  {id:"trifecta",  cat:"special", icon:"🔱",title:"Trifecta",         desc:"Log 3 habits from 3 different cats same day",unlocked:false,progress:0,target:7, rarity:"gold"},
+  {id:"focustreak",cat:"special", icon:"🔭",title:"Focus Streak",     desc:"Do a focus session 7 days in a row",     unlocked:false,progress:0,target:7,    rarity:"gold"},
+  {id:"journalmood",cat:"special",icon:"🎭",title:"Journaled Feels",  desc:"Log mood + journal entry 10 days",       unlocked:false,progress:0,target:10,   rarity:"silver"},
+  {id:"savingsguru",cat:"special",icon:"🏦",title:"Savings Guru",     desc:"Track a savings expense 30 times",       unlocked:false,progress:0,target:30,   rarity:"gold"},
+  {id:"noexcuse",  cat:"special", icon:"🛡️",title:"No Excuses",       desc:"Complete all habits on a Monday",        unlocked:false,progress:0,target:5,    rarity:"silver"},
+  {id:"weekend",   cat:"special", icon:"🎉",title:"Weekend Warrior",  desc:"Perfect days on 10 weekends",            unlocked:false,progress:0,target:10,   rarity:"gold"},
+  {id:"newyear",   cat:"special", icon:"🎆",title:"Resolution Keeper",desc:"Maintain a habit for all of January",    unlocked:false,progress:0,target:31,   rarity:"gold"},
+  {id:"allpillar", cat:"special", icon:"🌐",title:"Pillar Seeker",    desc:"Have at least one goal in each pillar",  unlocked:false,progress:0,target:3,    rarity:"silver"},
+  {id:"200focus",  cat:"focus",   icon:"🌌",title:"200 Focus Sessions",desc:"Complete 200 focus sessions",           unlocked:false,progress:0,target:200,  rarity:"platinum"},
+  {id:"l5000",     cat:"logs",    icon:"🧿",title:"5000 Logs",        desc:"Log 5,000 habit completions",            unlocked:false,progress:0,target:5000, rarity:"platinum"},
+
+  // ── LEGENDARY PILLAR ACHIEVEMENTS (9 total: 3 Power, 3 Wealth, 3 Wisdom) ──
+  // These are intentionally brutal — designed to take months or years
+
+  // POWER I — Physical & Mental Dominance
+  {id:"xp1", cat:"pillar", pillar:"power", icon:"⚡",
+   title:"Iron Forged",
+   desc:"Log fitness or health habits 500 times. Your body is becoming a weapon. Pain is just weakness leaving.",
+   lore:"500 reps of showing up. No days off. Iron is forged under extreme heat and pressure — so are you.",
+   unlocked:false,progress:0,target:500, rarity:"legendary"},
+
+  // POWER II — Unbreakable Consistency
+  {id:"xp2", cat:"pillar", pillar:"power", icon:"🔱",
+   title:"Unstoppable Force",
+   desc:"Maintain a single habit streak of 200 consecutive days. Not 199. Not almost. 200.",
+   lore:"200 days of unbroken will. Most people quit in week 2. You chose to become the exception, not the rule.",
+   unlocked:false,progress:0,target:200, rarity:"legendary"},
+
+  // POWER III — Total Domination
+  {id:"xp3", cat:"pillar", pillar:"power", icon:"👑",
+   title:"TITAN",
+   desc:"Achieve 365 perfect days — every single habit completed, every day, for one full year.",
+   lore:"A full solar orbit of perfection. No one will believe you. You won't need them to. You'll know.",
+   unlocked:false,progress:0,target:365, rarity:"legendary"},
+
+  // WEALTH I — Financial Awareness
+  {id:"xw1", cat:"pillar", pillar:"wealth", icon:"💰",
+   title:"The Accountant",
+   desc:"Track 1,000 individual expenses. Know where every rupee goes. Your ledger tells your story.",
+   lore:"1,000 entries. Most people guess at their finances. You will have data. Data is power.",
+   unlocked:false,progress:0,target:1000, rarity:"legendary"},
+
+  // WEALTH II — Budget Discipline
+  {id:"xw2", cat:"pillar", pillar:"wealth", icon:"🏛️",
+   title:"Frugal Emperor",
+   desc:"Stay under budget for 12 consecutive months. Not one month over. Twelve. In a row.",
+   lore:"A year of iron fiscal discipline. Every want denied, every need met. This is the foundation of real wealth.",
+   unlocked:false,progress:0,target:12, rarity:"legendary"},
+
+  // WEALTH III — Long-Game Mastery
+  {id:"xw3", cat:"pillar", pillar:"wealth", icon:"💎",
+   title:"WEALTH SOVEREIGN",
+   desc:"Track savings expenses 200 times AND stay under budget for 6 months AND log 500 expenses total.",
+   lore:"The trifecta of wealth. Earn. Save. Track. Repeat for months. This badge is rarer than most people's retirement plans.",
+   unlocked:false,progress:0,target:200, rarity:"legendary"},
+
+  // WISDOM I — Self-Knowledge
+  {id:"xv1", cat:"pillar", pillar:"wisdom", icon:"🔮",
+   title:"The Oracle",
+   desc:"Write 365 journal entries. One year of honest self-reflection. You will not recognize yourself.",
+   lore:"365 windows into your own mind. Most people live their entire lives as strangers to themselves. You chose differently.",
+   unlocked:false,progress:0,target:365, rarity:"legendary"},
+
+  // WISDOM II — Mastery of Mind
+  {id:"xv2", cat:"pillar", pillar:"wisdom", icon:"🧘",
+   title:"Mind Architect",
+   desc:"Log mindfulness habits 500 times AND complete 200 focus sessions. Your mind is your sharpest tool.",
+   lore:"500 moments of presence. 200 sessions of deep work. The mind untrained is a storm. Yours is becoming a laser.",
+   unlocked:false,progress:0,target:500, rarity:"legendary"},
+
+  // WISDOM III — The Enlightened
+  {id:"xv3", cat:"pillar", pillar:"wisdom", icon:"🌌",
+   title:"ENLIGHTENED",
+   desc:"Log moods for 500 days, write 200 journal entries, AND maintain a learning habit streak of 100 days. Simultaneously.",
+   lore:"To know thyself is the beginning of all wisdom — Socrates. You didn't just read that. You lived it for years.",
+   unlocked:false,progress:0,target:500, rarity:"legendary"},
+
+  // ══════════════════════════════════════════════════════════════
+  // 100 NEW ACHIEVEMENTS
+  // ══════════════════════════════════════════════════════════════
+
+  // ── STARTER (NEW) ── first-touch moments
+  {id:"ns1",  cat:"starter", icon:"🌤️", title:"Fresh Start",       desc:"Log a habit in the morning (before noon)", unlocked:false,progress:0,target:1, rarity:"starter"},
+  {id:"ns2",  cat:"starter", icon:"🎨", title:"Creative Soul",      desc:"Create a habit in the creativity category", unlocked:false,progress:0,target:1, rarity:"starter"},
+  {id:"ns3",  cat:"starter", icon:"👋", title:"Social Butterfly",   desc:"Create a habit in the social category",     unlocked:false,progress:0,target:1, rarity:"starter"},
+  {id:"ns4",  cat:"starter", icon:"💼", title:"Work Ethic",         desc:"Create a habit in the work category",       unlocked:false,progress:0,target:1, rarity:"starter"},
+  {id:"ns5",  cat:"starter", icon:"🌙", title:"Night Ritual",       desc:"Log a habit after 9pm for the first time",  unlocked:false,progress:0,target:1, rarity:"starter"},
+
+  // ── BRONZE (NEW) ── early momentum
+  {id:"nb1",  cat:"logs",    icon:"📌", title:"Locked In",          desc:"Log 20 habit completions",                 unlocked:false,progress:0,target:20,  rarity:"bronze"},
+  {id:"nb2",  cat:"streak",  icon:"🕯️", title:"Kindle",            desc:"Keep a 5-day streak",                      unlocked:false,progress:0,target:5,   rarity:"bronze"},
+  {id:"nb3",  cat:"mood",    icon:"🌈", title:"Spectrum",           desc:"Log all 5 different mood levels",          unlocked:false,progress:0,target:5,   rarity:"bronze"},
+  {id:"nb4",  cat:"journal", icon:"✍️", title:"First Draft",        desc:"Write a journal entry longer than 100 chars",unlocked:false,progress:0,target:1,  rarity:"bronze"},
+  {id:"nb5",  cat:"focus",   icon:"🕰️", title:"Pomodoro Starter",  desc:"Complete 3 focus sessions in one day",     unlocked:false,progress:0,target:3,   rarity:"bronze"},
+  {id:"nb6",  cat:"habits",  icon:"⚙️", title:"Systems Builder",   desc:"Have 3 habits with a set reminder",        unlocked:false,progress:0,target:3,   rarity:"bronze"},
+  {id:"nb7",  cat:"spend",   icon:"📱", title:"Spend Tracker",      desc:"Log 5 expenses in a single day",          unlocked:false,progress:0,target:5,   rarity:"bronze"},
+  {id:"nb8",  cat:"water",   icon:"🪣", title:"Bucket Filler",     desc:"Hit water goal 5 days in a row",           unlocked:false,progress:0,target:5,   rarity:"bronze"},
+  {id:"nb9",  cat:"special", icon:"🌍", title:"Habit Ecosystem",    desc:"Log at least 1 habit across 5 different days in a week", unlocked:false,progress:0,target:5, rarity:"bronze"},
+  {id:"nb10", cat:"logs",    icon:"🎲", title:"Thirty Reps",        desc:"Log 30 habit completions total",           unlocked:false,progress:0,target:30,  rarity:"bronze"},
+
+  // ── SILVER (NEW) ── real traction
+  {id:"ns10", cat:"streak",  icon:"🌬️", title:"Wind Rider",        desc:"Maintain a 21-day streak",                 unlocked:false,progress:0,target:21,  rarity:"silver"},
+  {id:"ns11", cat:"logs",    icon:"🎯", title:"75 Reps",            desc:"Log 75 habit completions",                 unlocked:false,progress:0,target:75,  rarity:"silver"},
+  {id:"ns12", cat:"journal", icon:"🖋️", title:"Ten Day Scribe",    desc:"Write journal entries 10 days straight",   unlocked:false,progress:0,target:10,  rarity:"silver"},
+  {id:"ns13", cat:"mood",    icon:"😎", title:"Mood Historian",     desc:"Log mood 20 days in a row",                unlocked:false,progress:0,target:20,  rarity:"silver"},
+  {id:"ns14", cat:"focus",   icon:"🎻", title:"10 Deep Sessions",   desc:"Complete 10 focus sessions",               unlocked:false,progress:0,target:10,  rarity:"silver"},
+  {id:"ns15", cat:"spend",   icon:"🏷️", title:"Category Conqueror", desc:"Log expenses in 6 different categories",  unlocked:false,progress:0,target:6,   rarity:"silver"},
+  {id:"ns16", cat:"water",   icon:"🌧️", title:"Rain Maker",        desc:"Hit water goal 15 days in a row",          unlocked:false,progress:0,target:15,  rarity:"silver"},
+  {id:"ns17", cat:"perfect", icon:"🌻", title:"Sunflower Week",     desc:"Get 5 perfect days",                       unlocked:false,progress:0,target:5,   rarity:"silver"},
+  {id:"ns18", cat:"habits",  icon:"🏛️", title:"Pillar Builder",    desc:"Have habits in all 3 pillar categories (fitness, learning, mindfulness)", unlocked:false,progress:0,target:3, rarity:"silver"},
+  {id:"ns19", cat:"special", icon:"🎭", title:"Dual Mode",          desc:"Complete a focus session AND log a journal entry on the same day, 5 times", unlocked:false,progress:0,target:5, rarity:"silver"},
+  {id:"ns20", cat:"logs",    icon:"🔋", title:"150 Charged",        desc:"Log 150 habit completions",                unlocked:false,progress:0,target:150, rarity:"silver"},
+  {id:"ns21", cat:"special", icon:"🌅", title:"Morning Stack",      desc:"Log 3 or more habits before noon, 7 times",unlocked:false,progress:0,target:7,   rarity:"silver"},
+  {id:"ns22", cat:"focus",   icon:"⌛", title:"Focus Fortnight",    desc:"Do a focus session every day for 14 days", unlocked:false,progress:0,target:14,  rarity:"silver"},
+
+  // ── GOLD (NEW) ── serious commitment
+  {id:"ng1",  cat:"streak",  icon:"🦅", title:"Eagle Streak",       desc:"Maintain a 45-day streak",                 unlocked:false,progress:0,target:45,  rarity:"gold"},
+  {id:"ng2",  cat:"logs",    icon:"🎖️", title:"200 Strong",         desc:"Log 200 habit completions",                unlocked:false,progress:0,target:200, rarity:"gold"},
+  {id:"ng3",  cat:"perfect", icon:"🌠", title:"Shooting Stars",     desc:"Get 20 perfect days",                      unlocked:false,progress:0,target:20,  rarity:"gold"},
+  {id:"ng4",  cat:"journal", icon:"📜", title:"Chronicles",         desc:"Write 50 journal entries",                 unlocked:false,progress:0,target:50,  rarity:"gold"},
+  {id:"ng5",  cat:"focus",   icon:"🛰️", title:"Orbit",             desc:"Complete 30 focus sessions",               unlocked:false,progress:0,target:30,  rarity:"gold"},
+  {id:"ng6",  cat:"water",   icon:"🏞️", title:"River Flow",        desc:"Hit water goal 60 times",                  unlocked:false,progress:0,target:60,  rarity:"gold"},
+  {id:"ng7",  cat:"spend",   icon:"💼", title:"CFO Mode",           desc:"Track 75 expenses total",                  unlocked:false,progress:0,target:75,  rarity:"gold"},
+  {id:"ng8",  cat:"mood",    icon:"📈", title:"Emotional Investor", desc:"Log mood 60 days in a row",                unlocked:false,progress:0,target:60,  rarity:"gold"},
+  {id:"ng9",  cat:"special", icon:"🧲", title:"Habit Magnet",       desc:"Complete all habits 5 days in a single week (Mon–Sun), 4 weeks straight", unlocked:false,progress:0,target:20, rarity:"gold"},
+  {id:"ng10", cat:"logs",    icon:"🎆", title:"350 Logs",           desc:"Log 350 habit completions",                unlocked:false,progress:0,target:350, rarity:"gold"},
+  {id:"ng11", cat:"streak",  icon:"🌋", title:"Volcanic",           desc:"Maintain a 75-day streak",                 unlocked:false,progress:0,target:75,  rarity:"gold"},
+  {id:"ng12", cat:"focus",   icon:"🔭", title:"40 Sessions Deep",   desc:"Complete 40 focus sessions",               unlocked:false,progress:0,target:40,  rarity:"gold"},
+  {id:"ng13", cat:"special", icon:"🏄", title:"Wave Rider",         desc:"Log habits 7 days in a row for 8 different weeks", unlocked:false,progress:0,target:56, rarity:"gold"},
+  {id:"ng14", cat:"perfect", icon:"🧲", title:"Perfect Fortnight",  desc:"Get 14 perfect days in a single month",    unlocked:false,progress:0,target:14,  rarity:"gold"},
+  {id:"ng15", cat:"journal", icon:"🌐", title:"Reflections",        desc:"Write 75 journal entries total",           unlocked:false,progress:0,target:75,  rarity:"gold"},
+
+  // ── PLATINUM (NEW) ── elite tier
+  {id:"np1",  cat:"streak",  icon:"💠", title:"Diamond Streak",     desc:"Maintain a 120-day streak",                unlocked:false,progress:0,target:120, rarity:"platinum"},
+  {id:"np2",  cat:"logs",    icon:"🌊", title:"Tidal Force",        desc:"Log 1,500 habit completions",              unlocked:false,progress:0,target:1500,rarity:"platinum"},
+  {id:"np3",  cat:"perfect", icon:"🌌", title:"Galaxy Brain",       desc:"Get 150 perfect days",                     unlocked:false,progress:0,target:150, rarity:"platinum"},
+  {id:"np4",  cat:"journal", icon:"📗", title:"Volume I",           desc:"Write 150 journal entries",                unlocked:false,progress:0,target:150, rarity:"platinum"},
+  {id:"np5",  cat:"focus",   icon:"⚗️", title:"Alchemist",         desc:"Complete 150 focus sessions",              unlocked:false,progress:0,target:150, rarity:"platinum"},
+  {id:"np6",  cat:"water",   icon:"🌊", title:"Pacific Discipline", desc:"Hit water goal 200 times total",           unlocked:false,progress:0,target:200, rarity:"platinum"},
+  {id:"np7",  cat:"spend",   icon:"🗺️", title:"Treasure Map",      desc:"Track 300 expenses total",                 unlocked:false,progress:0,target:300, rarity:"platinum"},
+  {id:"np8",  cat:"streak",  icon:"🔮", title:"240 Days Forged",    desc:"Maintain a 240-day streak",                unlocked:false,progress:0,target:240, rarity:"platinum"},
+  {id:"np9",  cat:"mood",    icon:"🧿", title:"Emotional Atlas",    desc:"Log mood 365 times total",                 unlocked:false,progress:0,target:365, rarity:"platinum"},
+  {id:"np10", cat:"logs",    icon:"🌟", title:"2500 Reps",          desc:"Log 2,500 habit completions total",        unlocked:false,progress:0,target:2500,rarity:"platinum"},
+  {id:"np11", cat:"special", icon:"🦁", title:"Apex Predator",      desc:"Have 8 habits all with streaks over 30 days simultaneously", unlocked:false,progress:0,target:8, rarity:"platinum"},
+  {id:"np12", cat:"perfect", icon:"🏔️", title:"Summit",            desc:"Get 200 perfect days total",               unlocked:false,progress:0,target:200, rarity:"platinum"},
+  {id:"np13", cat:"focus",   icon:"🧪", title:"500 Focus Hours",    desc:"Accumulate 500 total focus hours",         unlocked:false,progress:0,target:500, rarity:"platinum"},
+  {id:"np14", cat:"journal", icon:"📘", title:"Volume II",          desc:"Write 250 journal entries",                unlocked:false,progress:0,target:250, rarity:"platinum"},
+  {id:"np15", cat:"spend",   icon:"🏯", title:"Financial Fortress", desc:"Track 750 expenses total",                 unlocked:false,progress:0,target:750, rarity:"platinum"},
+
+  // ── SPECIAL / COMBO (NEW) ── creative conditions
+  {id:"nc1",  cat:"special", icon:"🌞", title:"Solar Powered",      desc:"Log habits for 7 consecutive mornings before 8am", unlocked:false,progress:0,target:7,   rarity:"silver"},
+  {id:"nc2",  cat:"special", icon:"🎹", title:"Rhythm Section",     desc:"Log the exact same habit set 5 days in a row", unlocked:false,progress:0,target:5,   rarity:"silver"},
+  {id:"nc3",  cat:"special", icon:"🧬", title:"DNA Coded",          desc:"Maintain 5 habits for 30+ days each simultaneously", unlocked:false,progress:0,target:5, rarity:"gold"},
+  {id:"nc4",  cat:"special", icon:"🪐", title:"Gravity",            desc:"Complete every habit category at least once in a single week", unlocked:false,progress:0,target:8, rarity:"gold"},
+  {id:"nc5",  cat:"special", icon:"🎯", title:"Laser Focus",        desc:"Do a 90-minute focus session 10 times",    unlocked:false,progress:0,target:10,  rarity:"gold"},
+  {id:"nc6",  cat:"special", icon:"🤺", title:"Gladiator",          desc:"Complete all habits on a day you logged a negative mood", unlocked:false,progress:0,target:5, rarity:"gold"},
+  {id:"nc7",  cat:"special", icon:"🌺", title:"Spring Reset",       desc:"Re-create a broken streak within 3 days and hold it 30 days", unlocked:false,progress:0,target:30, rarity:"gold"},
+  {id:"nc8",  cat:"special", icon:"🏹", title:"Archer",             desc:"Hit 100% of your daily target for 10 consecutive days", unlocked:false,progress:0,target:10, rarity:"silver"},
+  {id:"nc9",  cat:"special", icon:"🌊", title:"Tsunami",            desc:"Log 10+ habit completions in a single day", unlocked:false,progress:0,target:1,   rarity:"silver"},
+  {id:"nc10", cat:"special", icon:"🦋", title:"Metamorphosis",      desc:"Log habits in 6+ categories in a single week", unlocked:false,progress:0,target:6, rarity:"gold"},
+  {id:"nc11", cat:"special", icon:"🧩", title:"Full Puzzle",        desc:"Log a habit + journal entry + focus session + expense all on the same day, 10 times", unlocked:false,progress:0,target:10, rarity:"gold"},
+  {id:"nc12", cat:"special", icon:"🎸", title:"Encore",             desc:"Log habits on a day after your streak broke — bouncing back 3 times total", unlocked:false,progress:0,target:3, rarity:"silver"},
+  {id:"nc13", cat:"special", icon:"🕊️", title:"Sunday Saint",      desc:"Complete all habits on 20 Sundays",        unlocked:false,progress:0,target:20,  rarity:"gold"},
+  {id:"nc14", cat:"special", icon:"🦅", title:"Altitude",          desc:"Complete all habits on 20 Mondays — the hardest day of the week", unlocked:false,progress:0,target:20, rarity:"gold"},
+  {id:"nc15", cat:"special", icon:"🎲", title:"Wildcard",           desc:"Create and complete a habit in a category you've never used before", unlocked:false,progress:0,target:1, rarity:"bronze"},
+
+  // ── CATEGORY DEPTH (NEW) ── go deep in one area
+  {id:"ncat1", cat:"health",  icon:"🫀", title:"Vital Signs",       desc:"Log health habits 30 times",               unlocked:false,progress:0,target:30,  rarity:"bronze"},
+  {id:"ncat2", cat:"fitness", icon:"🏋️", title:"Iron Session",     desc:"Log fitness habits 30 times",              unlocked:false,progress:0,target:30,  rarity:"bronze"},
+  {id:"ncat3", cat:"learn",   icon:"📐", title:"Mathlete",          desc:"Log learning habits 30 times",             unlocked:false,progress:0,target:30,  rarity:"bronze"},
+  {id:"ncat4", cat:"mind",    icon:"🕊️", title:"Still Waters",     desc:"Log mindfulness habits 30 times",          unlocked:false,progress:0,target:30,  rarity:"bronze"},
+  {id:"ncat5", cat:"health",  icon:"🔬", title:"Lab Results",       desc:"Log health habits 100 times",              unlocked:false,progress:0,target:100, rarity:"silver"},
+  {id:"ncat6", cat:"fitness", icon:"⚔️", title:"Warrior",           desc:"Log fitness habits 100 times",             unlocked:false,progress:0,target:100, rarity:"silver"},
+  {id:"ncat7", cat:"learn",   icon:"🏫", title:"Scholar Pro",       desc:"Log learning habits 100 times",            unlocked:false,progress:0,target:100, rarity:"silver"},
+  {id:"ncat8", cat:"mind",    icon:"🌿", title:"Forest Mind",       desc:"Log mindfulness habits 100 times",         unlocked:false,progress:0,target:100, rarity:"silver"},
+  {id:"ncat9", cat:"health",  icon:"⚕️", title:"Health Sovereign",  desc:"Log health habits 300 times",              unlocked:false,progress:0,target:300, rarity:"gold"},
+  {id:"ncat10",cat:"fitness", icon:"🦾", title:"Cyborg",            desc:"Log fitness habits 300 times",             unlocked:false,progress:0,target:300, rarity:"gold"},
+  {id:"ncat11",cat:"learn",   icon:"🎓", title:"PhD Grind",         desc:"Log learning habits 300 times",            unlocked:false,progress:0,target:300, rarity:"gold"},
+  {id:"ncat12",cat:"mind",    icon:"🌌", title:"Cosmic Calm",       desc:"Log mindfulness habits 300 times",         unlocked:false,progress:0,target:300, rarity:"gold"},
+  {id:"ncat13",cat:"work",    icon:"🏢", title:"Work Horse",        desc:"Log work habits 50 times",                 unlocked:false,progress:0,target:50,  rarity:"silver"},
+  {id:"ncat14",cat:"creativity",icon:"🎭",title:"Creator",          desc:"Log creativity habits 50 times",           unlocked:false,progress:0,target:50,  rarity:"silver"},
+  {id:"ncat15",cat:"social",  icon:"🤝", title:"Connector",         desc:"Log social habits 30 times",               unlocked:false,progress:0,target:30,  rarity:"bronze"},
+  {id:"ncat16",cat:"finance", icon:"📊", title:"Finance Habit",     desc:"Log finance habits 20 times",              unlocked:false,progress:0,target:20,  rarity:"bronze"},
+  {id:"ncat17",cat:"work",    icon:"🚀", title:"Grind Season",      desc:"Log work habits 200 times",                unlocked:false,progress:0,target:200, rarity:"gold"},
+  {id:"ncat18",cat:"creativity",icon:"🖼️",title:"Masterpiece",     desc:"Log creativity habits 200 times",          unlocked:false,progress:0,target:200, rarity:"gold"},
+
+  // ── EXTREME PILLAR PREREQUISITES ── brutally hard non-pillar
+  // POWER ROAD
+  {id:"xpre1", cat:"special", icon:"🏗️", title:"Foundation of Power",   desc:"Log fitness or health habits 200 times. The minimum price of entry to true Power.", unlocked:false,progress:0,target:200, rarity:"platinum"},
+  {id:"xpre2", cat:"streak",  icon:"⚡", title:"Current Unbroken",       desc:"Maintain any single habit streak for 150 days. Nearly half a year. No breaks. No excuses.", unlocked:false,progress:0,target:150, rarity:"platinum"},
+  {id:"xpre3", cat:"perfect", icon:"🌑", title:"Dark Matter Discipline", desc:"Get 250 perfect days total. One quarter-thousand days of flawlessness.", unlocked:false,progress:0,target:250, rarity:"platinum"},
+
+  // WEALTH ROAD
+  {id:"xpre4", cat:"spend",   icon:"🔑", title:"Key to the Vault",       desc:"Track 750 total expenses. Know your money better than your own name.", unlocked:false,progress:0,target:750, rarity:"platinum"},
+  {id:"xpre5", cat:"special", icon:"🧮", title:"The Ledger",             desc:"Stay under monthly budget for 9 consecutive months. Iron fiscal will.", unlocked:false,progress:0,target:9,   rarity:"platinum"},
+  {id:"xpre6", cat:"spend",   icon:"🏦", title:"Savings Architect",      desc:"Track savings-category expenses 100 times. Build the habit of building wealth.", unlocked:false,progress:0,target:100, rarity:"platinum"},
+
+  // WISDOM ROAD
+  {id:"xpre7", cat:"journal", icon:"🧠", title:"Mind Map",               desc:"Write 300 journal entries. Three hundred windows into who you are becoming.", unlocked:false,progress:0,target:300, rarity:"platinum"},
+  {id:"xpre8", cat:"focus",   icon:"🌊", title:"Ocean of Focus",         desc:"Complete 300 focus sessions total. Your concentration is now a superpower.", unlocked:false,progress:0,target:300, rarity:"platinum"},
+  {id:"xpre9", cat:"mood",    icon:"🔮", title:"Oracle in Training",     desc:"Log mood for 400 consecutive days. Understand your patterns at a cellular level.", unlocked:false,progress:0,target:400, rarity:"platinum"},
+];
+const DEFAULT_GOALS = [
+  {id:1,title:"Total Habit Logs",pillar:"power", target:100,current:23,unit:"logs"},
+  {id:2,title:"Perfect Days",    pillar:"wisdom",target:30, current:8, unit:"days"},
+  {id:3,title:"Expenses Tracked",pillar:"wealth",target:50, current:12,unit:"₹"},
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+   HOOKS & UTILS
+═══════════════════════════════════════════════════════════════════ */
+function useLS(k, init) {
+  const [v, sv] = useState(() => {
+    try {
+      const s = localStorage.getItem(k);
+      if (!s) return typeof init === "function" ? init() : init;
+      const parsed = JSON.parse(s);
+      // Basic type guard: if init is array, parsed must be array; if object, must be object
+      const initVal = typeof init === "function" ? init() : init;
+      if (Array.isArray(initVal) && !Array.isArray(parsed)) return initVal;
+      if (initVal !== null && typeof initVal === "object" && !Array.isArray(initVal) && (typeof parsed !== "object" || Array.isArray(parsed) || parsed === null)) return initVal;
+      return parsed;
+    } catch { return typeof init === "function" ? init() : init; }
+  });
+  useEffect(() => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }, [k, v]);
+  return [v, sv];
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SVG CHART COMPONENTS
+═══════════════════════════════════════════════════════════════════ */
+function LineChart({ data, color, height=80, label="", showDots=true }) {
+  if (!data || data.length < 2) return <div style={{height,display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,0.2)",fontSize:12}}>No data</div>;
+  const w=300, h=height, pad=8;
+  const max=Math.max(...data,1), min=0;
+  const pts=data.map((v,i)=>({
+    x:pad+(i/(data.length-1))*(w-pad*2),
+    y:h-pad-(v-min)/(max-min||1)*(h-pad*2)
+  }));
+  const pathD="M "+pts.map(p=>`${p.x},${p.y}`).join(" L ");
+  const areaD=pathD+` L ${pts[pts.length-1].x},${h} L ${pts[0].x},${h} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} style={{width:"100%",height,display:"block"}}>
+      <defs>
+        <linearGradient id={`lg${color.replace("#","")}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35"/>
+          <stop offset="100%" stopColor={color} stopOpacity="0.02"/>
+        </linearGradient>
+      </defs>
+      <path d={areaD} fill={`url(#lg${color.replace("#","")})`}/>
+      <path d={pathD} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={{filter:`drop-shadow(0 0 4px ${color}88)`}}/>
+      {showDots && pts.map((p,i)=>(
+        <circle key={i} cx={p.x} cy={p.y} r="3" fill={color} style={{filter:`drop-shadow(0 0 3px ${color})`}}/>
+      ))}
+    </svg>
+  );
+}
+
+function BarChart({ data, colors, maxVal, height=100, labels }) {
+  if (!data || !data.length) return null;
+  const w=300, h=height, pad=4;
+  const max=maxVal||Math.max(...data,1);
+  const bw=(w-pad*(data.length+1))/data.length;
+  return (
+    <svg viewBox={`0 0 ${w} ${h+20}`} style={{width:"100%",display:"block"}}>
+      {data.map((v,i)=>{
+        const bh=Math.max((v/max)*(h-8),2);
+        const x=pad+(i*(bw+pad));
+        const y=h-bh;
+        const col=Array.isArray(colors)?colors[i%colors.length]:colors;
+        return (
+          <g key={i}>
+            <rect x={x} y={y} width={bw} height={bh} rx="4" fill={col} opacity="0.85"
+              style={{filter:`drop-shadow(0 0 6px ${col}55)`}}/>
+            {labels && <text x={x+bw/2} y={h+14} textAnchor="middle" fill="rgba(120,120,160,0.7)" fontSize="8">{labels[i]}</text>}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+function DonutChart({ segments, size=120 }) {
+  const total=segments.reduce((s,x)=>s+x.value,0)||1;
+  let offset=0;
+  const r=46, circ=2*Math.PI*r, cx=60, cy=60, sw=14;
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120">
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={sw}/>
+      {segments.map((seg,i)=>{
+        const pct=seg.value/total;
+        const dash=pct*circ, gap=circ-dash;
+        const el=(
+          <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={seg.color} strokeWidth={sw}
+            strokeDasharray={`${dash} ${gap}`} strokeDashoffset={-offset}
+            strokeLinecap="round" transform="rotate(-90 60 60)"
+            style={{filter:`drop-shadow(0 0 5px ${seg.color}88)`,transition:"stroke-dasharray .6s ease"}}/>
+        );
+        offset+=dash;
+        return el;
+      })}
+    </svg>
+  );
+}
+
+function HeatmapGrid({ data, color, days=28 }) {
+  const weeks=Math.ceil(days/7);
+  const max=Math.max(...Object.values(data),1);
+  const allDays=Array.from({length:days},(_,i)=>{
+    const d=new Date();d.setDate(d.getDate()-(days-1-i));
+    return d.toISOString().slice(0,10);
+  });
+  return (
+    <div style={{display:"grid",gridTemplateColumns:`repeat(${weeks},1fr)`,gap:3}}>
+      {Array.from({length:weeks}).map((_,wi)=>(
+        <div key={wi} style={{display:"flex",flexDirection:"column",gap:3}}>
+          {allDays.slice(wi*7,(wi+1)*7).map((d,di)=>{
+            const v=data[d]||0;
+            const op=v>0?Math.max(0.2,v/max):0.06;
+            return <div key={di} title={`${d}: ${v}`} style={{width:"100%",aspectRatio:"1",borderRadius:3,background:v>0?color:`rgba(255,255,255,0.06)`,opacity:v>0?op:0.06,transition:"opacity .3s"}}/>;
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RadarChart({ axes, values, color, size=140 }) {
+  const n=axes.length, cx=size/2, cy=size/2, r=size/2-20;
+  const angle=i=>(i/n)*2*Math.PI - Math.PI/2;
+  const pts=values.map((v,i)=>({
+    x:cx+r*(v/100)*Math.cos(angle(i)),
+    y:cy+r*(v/100)*Math.sin(angle(i)),
+  }));
+  const outer=axes.map((_,i)=>({x:cx+r*Math.cos(angle(i)),y:cy+r*Math.sin(angle(i))}));
+  const gridLevels=[0.25,0.5,0.75,1];
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {gridLevels.map(l=>(
+        <polygon key={l} points={axes.map((_,i)=>`${cx+r*l*Math.cos(angle(i))},${cy+r*l*Math.sin(angle(i))}`).join(" ")}
+          fill="none" stroke="rgba(128,128,168,0.15)" strokeWidth="1"/>
+      ))}
+      {outer.map((p,i)=><line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="rgba(128,128,168,0.15)" strokeWidth="1"/>)}
+      <polygon points={pts.map(p=>`${p.x},${p.y}`).join(" ")} fill={`${color}30`} stroke={color} strokeWidth="1.5"
+        style={{filter:`drop-shadow(0 0 6px ${color}66)`}}/>
+      {pts.map((p,i)=><circle key={i} cx={p.x} cy={p.y} r="3" fill={color}/>)}
+      {outer.map((p,i)=><text key={i} x={p.x+(p.x>cx?6:-6)} y={p.y+(p.y>cy?6:-6)} textAnchor={p.x>cx?"start":"end"} fill="rgba(128,128,168,0.7)" fontSize="8">{axes[i]}</text>)}
+    </svg>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MICRO COMPONENTS
+═══════════════════════════════════════════════════════════════════ */
+function Ring({pct,size=56,sw=5,color="#a78bfa",bg="rgba(255,255,255,0.07)"}) {
+  const r=(size-sw)/2,circ=2*Math.PI*r,dash=(pct/100)*circ;
+  return (
+    <svg width={size} height={size} style={{transform:"rotate(-90deg)",display:"block"}}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={bg} strokeWidth={sw}/>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={sw}
+        strokeDasharray={`${dash} ${circ-dash}`} strokeLinecap="round"
+        style={{transition:"stroke-dasharray .7s cubic-bezier(.4,0,.2,1)",filter:`drop-shadow(0 0 5px ${color}88)`}}/>
+    </svg>
+  );
+}
+
+function Tag({children,color}) {
+  return <span style={{fontSize:10,fontWeight:600,letterSpacing:"0.05em",textTransform:"uppercase",padding:"3px 8px",borderRadius:20,background:`${color}18`,color,border:`1px solid ${color}28`}}>{children}</span>;
+}
+
+function Stat({label,value,color,sub,mutedColor="rgba(160,160,180,0.6)"}) {
+  return (
+    <div style={{textAlign:"center"}}>
+      <div style={{fontSize:22,fontWeight:800,letterSpacing:"-0.03em",color}}>{value}</div>
+      <div style={{fontSize:10,fontWeight:600,color:mutedColor,marginTop:2,textTransform:"uppercase",letterSpacing:"0.05em"}}>{label}</div>
+      {sub&&<div style={{fontSize:9,color:mutedColor,opacity:0.7,marginTop:1}}>{sub}</div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MAIN APP
+═══════════════════════════════════════════════════════════════════ */
+function App() {
+  const [page,setPage]         = useState("dashboard");
+  const [theme,setTheme]       = useLS("hb_theme","cosmic");
+  const [fontSize,setFontSize] = useLS("hb_fs","normal");
+  const [density,setDensity]   = useLS("hb_density","normal");
+  const [brightness,setBrightness] = useLS("hb_brightness",100); // 60–130
+  const [saturation,setSaturation] = useLS("hb_saturation",100); // 60–160
+  const [habits,setH]          = useLS("hb_hab",DEFAULT_HABITS);
+  const [ach,setAch]           = useLS("hb_ach",DEFAULT_ACH);
+  const [goals,setGoals]       = useLS("hb_goals",DEFAULT_GOALS);
+  const [expenses,setExp]      = useLS("hb_exp",[]);
+  const [budget,setBudget]     = useLS("hb_budget",30000);
+  const [strict,setStrict]     = useLS("hb_strict",false);
+  const [moods,setMoods]       = useLS("hb_moods",{});
+  const [journal,setJournal]   = useLS("hb_journal",[]);
+  const [water,setWater]       = useLS("hb_water",{});
+  const [weight,setWeight]     = useLS("hb_weight",[]);
+  const [focus,setFocus]       = useLS("hb_focus",{sessions:[],active:false,duration:25});
+  const [customCats,setCustomCats] = useLS("hb_custom_cats",[]);
+  const [tasks,setTasks]           = useLS("hb_tasks",[]);
+  const [showReset,setShowReset]   = useState(false);
+  const [toast,setToast]           = useState(null);
+  const [modal,setModal]       = useState(null);
+  const [showUI,setShowUI]     = useState(false);
+
+  const T = THEMES[theme]||THEMES.cosmic;
+  const fs = FONT_SIZES[fontSize]||14;
+  const pad = density==="compact"?10:density==="comfortable"?20:14;
+
+  const showToast=useCallback((msg)=>{setToast(msg);setTimeout(()=>setToast(null),2600);},[]);
+
+  /* ── RESET HANDLERS ─────────────────────────────────────────── */
+  const resetAchievements=useCallback(()=>{
+    setAch(DEFAULT_ACH.map(a=>({...a,progress:0,unlocked:false})));
+    showToast("Achievements reset 🔄");
+    setShowReset(false);
+  },[setAch,showToast]);
+
+  const resetAll=useCallback(()=>{
+    const keys=["hb_theme","hb_fs","hb_density","hb_brightness","hb_saturation","hb_hab","hb_ach","hb_goals","hb_exp","hb_budget","hb_strict","hb_moods","hb_journal","hb_water","hb_weight","hb_focus","hb_custom_cats","hb_tasks"];
+    keys.forEach(k=>{ try{localStorage.removeItem(k);}catch{} });
+    window.location.reload();
+  },[]);
+
+  const today=todayISO();
+  const todayH=useMemo(()=>habits.map(h=>({...h,count:h.logs[today]||0})),[habits,today]);
+  const done=todayH.filter(h=>h.count>=h.target).length;
+  const dayPct=habits.length?Math.round(done/habits.length*100):0;
+  const totalLogs=useMemo(()=>habits.reduce((s,h)=>s+Object.values(h.logs).reduce((a,v)=>a+v,0),0),[habits]);
+  const maxStreak=useMemo(()=>habits.length?Math.max(...habits.map(h=>h.streak||0),0):0,[habits]);
+
+  const logH=useCallback(id=>{
+    setH(prev=>prev.map(h=>{
+      if(h.id!==id)return h;
+      const cur=h.logs[today]||0;
+      if(cur>=h.target)return h;
+      const nL={...h.logs,[today]:cur+1};
+      let streak=0;
+      const d=new Date();d.setDate(d.getDate()-1);
+      for(let i=0;i<365;i++){
+        const ds=d.toISOString().slice(0,10);
+        if((nL[ds]||0)>=h.target){streak++;d.setDate(d.getDate()-1);}else break;
+      }
+      if((nL[today]||0)>=h.target)streak++;
+      const bestStreak=Math.max(h.bestStreak||0,streak);
+      return{...h,logs:nL,streak,bestStreak};
+    }));
+    showToast("Logged! 🎯");
+  },[today,setH,showToast]);
+
+  const thisMonth=new Date().toISOString().slice(0,7);
+  const monthExp=expenses.filter(e=>e.date.startsWith(thisMonth));
+  const totalSpent=monthExp.reduce((s,e)=>s+Number(e.amount),0);
+
+  const pillarPct=useMemo(()=>{
+    const r={};
+    ["power","wealth","wisdom"].forEach(p=>{
+      const pg=goals.filter(g=>g.pillar===p);
+      r[p]=pg.length?Math.round(pg.filter(g=>g.current>=g.target).length/pg.length*100):0;
+    });
+    return r;
+  },[goals]);
+
+  const todayMood=moods[today];
+  const todayWater=water[today]||0;
+  const quote=useMemo(()=>QUOTE_LIST[Math.floor(Date.now()/86400000)%QUOTE_LIST.length],[]);
+
+  /* All categories merged */
+  const allCats = useMemo(()=>[...new Set([...HABIT_CATS,...customCats])],[customCats]);
+
+  /* ── SCROLL-TO-TOP ON PAGE CHANGE ───────────────────────────── */
+  const scrollRef   = useRef(null);
+  const prevPageRef = useRef(page);
+  const toastedAch  = useRef(new Set());
+  useEffect(()=>{
+    if(prevPageRef.current !== page){
+      prevPageRef.current = page;
+      if(scrollRef.current) scrollRef.current.scrollTop = 0;
+    }
+  },[page]);
+
+  /* ── ACHIEVEMENT ENGINE ─────────────────────────────────────── */
+  /* Runs whenever any tracked metric changes and updates ach progress/unlocked */
+  useEffect(()=>{
+    const totalLogs_=habits.reduce((s,h)=>s+Object.values(h.logs).reduce((a,v)=>a+v,0),0);
+    const maxStreak_=habits.length?Math.max(...habits.map(h=>h.streak||0),0):0;
+    const bestStreak_=habits.length?Math.max(...habits.map(h=>h.bestStreak||0),0):0;
+    const perfDays_=()=>{
+      const all30=last30Days();
+      return all30.filter(d=>habits.length>0&&habits.every(h=>(h.logs[d]||0)>=h.target)).length;
+    };
+    const perfDaysTotal=Object.keys(
+      habits.reduce((acc,h)=>{Object.keys(h.logs).forEach(d=>{acc[d]=true;});return acc;},{})
+    ).filter(d=>habits.length>0&&habits.every(h=>(h.logs[d]||0)>=h.target)).length;
+
+    const focusSessions=(focus.sessions||[]).length;
+    const focusHours=(focus.sessions||[]).reduce((s,x)=>s+((x.duration||0)/60),0);
+    const journalCount=journal.length;
+    const expCount=expenses.length;
+    const moodDays=Object.keys(moods).length;
+    const waterDays=Object.values(water).filter(v=>v>=8).length;
+    const habCats=[...new Set(habits.map(h=>h.category))].length;
+    const habCount=habits.length;
+
+    const logsByCat=(cat)=>habits.filter(h=>h.category===cat).reduce((s,h)=>s+Object.values(h.logs).reduce((a,v)=>a+v,0),0);
+    const fitLogs=logsByCat("fitness")+logsByCat("sports");
+    const hltLogs=logsByCat("health")+logsByCat("nutrition");
+    const lrnLogs=logsByCat("learning")+logsByCat("reading")+logsByCat("coding");
+    const mndLogs=logsByCat("mindfulness")+logsByCat("meditation")+logsByCat("gratitude");
+    const wrkLogs=logsByCat("work")+logsByCat("productivity");
+    const crtLogs=logsByCat("creativity")+logsByCat("art")+logsByCat("music");
+    const socLogs=logsByCat("social");
+    const finLogs=logsByCat("finance");
+
+    // savings expenses
+    const savingsExp=expenses.filter(e=>e.category==="savings").length;
+
+    // mood streak
+    const moodStreak=(()=>{
+      let streak=0;
+      const d=new Date();
+      for(let i=0;i<500;i++){
+        const ds=d.toISOString().slice(0,10);
+        if(moods[ds]){streak++;d.setDate(d.getDate()-1);}else break;
+      }
+      return streak;
+    })();
+
+    // learning habit streak (best streak of any learning-cat habit)
+    const lrnStreak=Math.max(...habits.filter(h=>["learning","reading","coding"].includes(h.category)).map(h=>h.streak||0),0);
+
+    // journal streak (consecutive days with journal)
+    const journalDays=new Set(journal.map(j=>j.date));
+    const journalStreak=(()=>{
+      let streak=0;
+      const d=new Date();
+      for(let i=0;i<500;i++){
+        const ds=d.toISOString().slice(0,10);
+        if(journalDays.has(ds)){streak++;d.setDate(d.getDate()-1);}else break;
+      }
+      return streak;
+    })();
+
+    // focus streak (consecutive days with focus session)
+    const focusDays=new Set((focus.sessions||[]).map(s=>s.date));
+    const focusStreak=(()=>{
+      let streak=0;
+      const d=new Date();
+      for(let i=0;i<500;i++){
+        const ds=d.toISOString().slice(0,10);
+        if(focusDays.has(ds)){streak++;d.setDate(d.getDate()-1);}else break;
+      }
+      return streak;
+    })();
+
+    // goals with reminders count
+    const habWithReminder=habits.filter(h=>h.reminder).length;
+
+    setAch(prev=>prev.map(a=>{
+      let prog=a.progress;
+      switch(a.id){
+        // STARTER
+        case"first":     prog=totalLogs_>0?1:0; break;
+        case"day1":      prog=habits.some(h=>Object.keys(h.logs).length>0)?1:0; break;
+        case"setup":     prog=habCount; break;
+        case"remind":    prog=habWithReminder>0?1:0; break;
+        case"mood1":     prog=moodDays>0?1:0; break;
+        case"water1":    prog=Object.keys(water).length>0?1:0; break;
+        case"journal1":  prog=journalCount>0?1:0; break;
+        case"focus1":    prog=focusSessions>0?1:0; break;
+        case"spend1":    prog=expCount>0?1:0; break;
+        case"goal1":     prog=goals.length>0?1:0; break;
+        case"ns1":       prog=habits.some(h=>Object.keys(h.logs).some(d=>{const hr=new Date(d+"T00:00:00").getHours();return (h.logs[d]||0)>0&&hr<12;}))?1:0; break;
+        case"ns2":       prog=habits.some(h=>h.category==="creativity")?1:0; break;
+        case"ns3":       prog=habits.some(h=>h.category==="social")?1:0; break;
+        case"ns4":       prog=habits.some(h=>["work","productivity"].includes(h.category))?1:0; break;
+        case"ns5":       prog=habits.some(h=>h.reminder&&parseInt(h.reminder)>=21)?1:0; break;
+        // LOGS
+        case"l10":       prog=totalLogs_; break;
+        case"nb1":       prog=totalLogs_; break;
+        case"nb10":      prog=totalLogs_; break;
+        case"l50":       prog=totalLogs_; break;
+        case"ns11":      prog=totalLogs_; break;
+        case"l100":      prog=totalLogs_; break;
+        case"ns20":      prog=totalLogs_; break;
+        case"l250":      prog=totalLogs_; break;
+        case"ng2":       prog=totalLogs_; break;
+        case"ng10":      prog=totalLogs_; break;
+        case"l500":      prog=totalLogs_; break;
+        case"l1000":     prog=totalLogs_; break;
+        case"np2":       prog=totalLogs_; break;
+        case"l2000":     prog=totalLogs_; break;
+        case"np10":      prog=totalLogs_; break;
+        case"l5000":     prog=totalLogs_; break;
+        // STREAKS
+        case"s3":        prog=maxStreak_; break;
+        case"nb2":       prog=maxStreak_; break;
+        case"s7":        prog=maxStreak_; break;
+        case"ns10":      prog=maxStreak_; break;
+        case"s14":       prog=maxStreak_; break;
+        case"s30":       prog=maxStreak_; break;
+        case"ng1":       prog=maxStreak_; break;
+        case"s60":       prog=maxStreak_; break;
+        case"s90":       prog=maxStreak_; break;
+        case"s100":      prog=maxStreak_; break;
+        case"np1":       prog=maxStreak_; break;
+        case"s180":      prog=bestStreak_; break;
+        case"np8":       prog=bestStreak_; break;
+        case"s365":      prog=bestStreak_; break;
+        case"ng11":      prog=maxStreak_; break;
+        case"xpre2":     prog=maxStreak_; break;
+        case"xp2":       prog=maxStreak_; break;
+        // PERFECT DAYS
+        case"p3":        prog=perfDaysTotal; break;
+        case"ns17":      prog=perfDaysTotal; break;
+        case"p7":        prog=perfDaysTotal; break;
+        case"p14":       prog=perfDaysTotal; break;
+        case"ng3":       prog=perfDaysTotal; break;
+        case"ng14":      prog=perfDaysTotal; break;
+        case"p30":       prog=perfDaysTotal; break;
+        case"p60":       prog=perfDaysTotal; break;
+        case"p100":      prog=perfDaysTotal; break;
+        case"p180":      prog=perfDaysTotal; break;
+        case"np3":       prog=perfDaysTotal; break;
+        case"xpre3":     prog=perfDaysTotal; break;
+        case"np12":      prog=perfDaysTotal; break;
+        case"xp3":       prog=perfDaysTotal; break;
+        // FOCUS
+        case"f5":        prog=focusSessions; break;
+        case"ns14":      prog=focusSessions; break;
+        case"f20":       prog=focusSessions; break;
+        case"f50":       prog=focusSessions; break;
+        case"ng5":       prog=focusSessions; break;
+        case"ng12":      prog=focusSessions; break;
+        case"f100":      prog=focusSessions; break;
+        case"np5":       prog=focusSessions; break;
+        case"200focus":  prog=focusSessions; break;
+        case"xpre8":     prog=focusSessions; break;
+        case"fm30":      prog=focusHours; break;
+        case"fm100":     prog=focusHours; break;
+        case"fm365":     prog=focusHours; break;
+        case"np13":      prog=focusHours; break;
+        case"focustreak":prog=focusStreak; break;
+        case"ns22":      prog=focusStreak; break;
+        // JOURNAL
+        case"j5":        prog=journalCount; break;
+        case"ns12":      prog=journalStreak; break;
+        case"j14":       prog=journalStreak; break;
+        case"j30":       prog=journalCount; break;
+        case"ng4":       prog=journalCount; break;
+        case"ng15":      prog=journalCount; break;
+        case"j100":      prog=journalCount; break;
+        case"np4":       prog=journalCount; break;
+        case"np14":      prog=journalCount; break;
+        case"xpre7":     prog=journalCount; break;
+        case"xv1":       prog=journalCount; break;
+        // MOOD
+        case"m5":        prog=moodStreak; break;
+        case"ns13":      prog=moodStreak; break;
+        case"ng8":       prog=moodStreak; break;
+        case"np9":       prog=moodDays; break;
+        case"nb3":       prog=[...new Set(Object.values(moods))].length; break;
+        case"journalmood":prog=Object.keys(moods).filter(d=>journalDays.has(d)).length; break;
+        case"xpre9":     prog=moodStreak; break;
+        // WATER
+        case"w3":        prog=waterDays; break;
+        case"nb8":       prog=waterDays; break;
+        case"ns16":      prog=waterDays; break;
+        case"w30":       prog=waterDays; break;
+        case"ng6":       prog=waterDays; break;
+        case"w90":       prog=waterDays; break;
+        case"w365":      prog=waterDays; break;
+        case"np6":       prog=waterDays; break;
+        // SPEND
+        case"e10":       prog=expCount; break;
+        case"nb7":       prog=expenses.filter(e=>e.date===today).length; break;
+        case"e50":       prog=expCount; break;
+        case"ns15":      prog=[...new Set(expenses.map(e=>e.category))].length; break;
+        case"e100":      prog=expCount; break;
+        case"ng7":       prog=expCount; break;
+        case"e500":      prog=expCount; break;
+        case"np7":       prog=expCount; break;
+        case"np15":      prog=expCount; break;
+        case"xpre4":     prog=expCount; break;
+        case"xw1":       prog=expCount; break;
+        case"savingsguru":prog=savingsExp; break;
+        case"xpre6":     prog=savingsExp; break;
+        case"xw3":       prog=savingsExp; break;
+        // HABITS meta
+        case"h4":        prog=habCats; break;
+        case"h6":        prog=habCats; break;
+        case"allcat":    prog=habCats; break;
+        case"nc4":       prog=habCats; break;
+        case"hab5":      prog=habCount; break;
+        case"hab10":     prog=habCount; break;
+        case"nb6":       prog=habWithReminder; break;
+        case"ns18":      prog=[...new Set(habits.filter(h=>["fitness","learning","mindfulness"].includes(h.category)).map(h=>h.category))].length; break;
+        // CATEGORY DEPTH
+        case"hlt10":     case"ncat1":   prog=hltLogs; break;
+        case"hlt50":     case"ncat5":   prog=hltLogs; break;
+        case"hlt200":    case"ncat9":   prog=hltLogs; break;
+        case"fit10":     case"ncat2":   prog=fitLogs; break;
+        case"fit50":     case"ncat6":   prog=fitLogs; break;
+        case"fit200":    case"ncat10":  prog=fitLogs; break;
+        case"lrn10":     case"ncat3":   prog=lrnLogs; break;
+        case"lrn50":     case"ncat7":   prog=lrnLogs; break;
+        case"ncat11":    prog=lrnLogs; break;
+        case"mnd10":     case"ncat4":   prog=mndLogs; break;
+        case"mnd50":     case"ncat8":   prog=mndLogs; break;
+        case"mnd200":    case"ncat12":  prog=mndLogs; break;
+        case"ncat13":    prog=wrkLogs; break;
+        case"ncat14":    case"ncat18":  prog=crtLogs; break;
+        case"ncat15":    prog=socLogs; break;
+        case"ncat16":    prog=finLogs; break;
+        case"ncat17":    prog=wrkLogs; break;
+        // FITNESS/HEALTH for power
+        case"xpre1":     prog=fitLogs+hltLogs; break;
+        case"xp1":       prog=fitLogs+hltLogs; break;
+        // WISDOM compound
+        case"xv2":       prog=mndLogs; break; // secondary check in unlock below
+        case"xv3":       prog=moodStreak; break;
+        // SPECIAL
+        case"nc9":       prog=Math.max(...last30Days().map(d=>habits.reduce((s,h)=>s+(h.logs[d]||0),0)),0)>=10?1:0; break;
+        case"nc15":      prog=habits.some(h=>!HABIT_CATS.includes(h.category)&&(Object.values(h.logs).reduce((a,v)=>a+v,0))>0)?1:0; break;
+        default:         prog=a.progress; break;
+      }
+      prog=Math.min(prog,a.target);
+      // Special compound unlock conditions
+      let unlocked=a.unlocked;
+      if(!unlocked){
+        switch(a.id){
+          case"xv2":   unlocked=mndLogs>=500&&focusSessions>=200; break;
+          case"xv3":   unlocked=moodStreak>=500&&journalCount>=200&&lrnStreak>=100; break;
+          case"xw3":   unlocked=savingsExp>=200&&expCount>=500; break;
+          default:     unlocked=prog>=a.target; break;
+        }
+      }
+      if(prog!==a.progress||unlocked!==a.unlocked){
+        if(unlocked&&!a.unlocked&&!toastedAch.current.has(a.id)){
+          toastedAch.current.add(a.id);
+          setTimeout(()=>showToast(`🏆 Achievement unlocked: ${a.title}!`),400);
+        }
+        return{...a,progress:prog,unlocked};
+      }
+      return a;
+    }));
+  // eslint-disable-next-line
+  },[habits,journal,expenses,moods,water,focus,goals]);
+
+  /* UI helpers */
+  const inp={width:"100%",background:T.glass,border:`1px solid ${T.border}`,borderRadius:12,padding:"9px 13px",color:T.text,fontSize:fs-1,fontFamily:"'Outfit',sans-serif"};
+  const lbl={fontSize:10,color:T.muted,display:"block",marginBottom:5,letterSpacing:"0.06em",textTransform:"uppercase",fontWeight:600};
+  const card={...{},className:"glass",style:{padding:pad,borderRadius:18,marginBottom:10}};
+
+  const hour=new Date().getHours();
+  const greeting=hour<12?"Good Morning ☀️":hour<17?"Good Afternoon 🌤️":"Good Evening 🌙";
+
+  /* ── DASHBOARD ──────────────────────────────────────────────── */
+  function Dashboard() {
+    const [ripple,setRipple]=useState(null);
+    const [flashId,setFlashId]=useState(null);
+    const handleLog=(id)=>{
+      setRipple(id);
+      setTimeout(()=>setRipple(null),500);
+      // check if this log will complete the habit
+      const h=habits.find(x=>x.id===id);
+      if(h&&(h.logs[today]||0)+1>=h.target){setFlashId(id);setTimeout(()=>setFlashId(null),600);}
+      logH(id);
+    };
+    return (
+      <div className="page stagger">
+        {/* Header */}
+        <div style={{padding:`24px 20px 10px`,display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <img src={APP_ICON_URI} alt="Triad" style={{width:48,height:48,borderRadius:14,boxShadow:`0 0 18px ${T.accent}44`,flexShrink:0,border:`1.5px solid ${T.accent}28`}}/>
+            <div>
+              <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",lineHeight:1.1,color:T.text}}>{greeting}</div>
+              <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>{new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})}</div>
+              <div style={{fontSize:fs-2,color:T.accent,marginTop:5,fontStyle:"italic",opacity:0.8}}>"{quote}"</div>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:7,alignItems:"center",flexShrink:0}}>
+            {strict&&<Tag color={T.accent3}>⚡</Tag>}
+            <button onClick={()=>setShowUI(true)} className="bp glass" style={{width:36,height:36,borderRadius:11,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,background:T.glass,color:T.text}}>🎨</button>
+          </div>
+        </div>
+
+        {/* Mood + Water quick row */}
+        <div style={{padding:"0 20px 12px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:9}}>
+          {/* Mood */}
+          <div className="glass" style={{padding:12,borderRadius:16}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:8}}>Today's Mood</div>
+            <div style={{display:"flex",gap:4,justifyContent:"space-between"}}>
+              {MOOD_OPTS.map(m=>(
+                <button key={m.v} onClick={()=>setMoods(prev=>({...prev,[today]:m.v}))} className="bp" style={{flex:1,padding:"4px 0",borderRadius:8,border:`1.5px solid ${todayMood===m.v?T.accent:"transparent"}`,background:todayMood===m.v?`${T.accent}22`:"transparent",cursor:"pointer",fontSize:16,display:"flex",justifyContent:"center",alignItems:"center"}}>
+                  {m.e}
+                </button>
+              ))}
+            </div>
+            {todayMood&&<div style={{fontSize:10,color:T.accent,marginTop:5,textAlign:"center"}}>{MOOD_OPTS.find(m=>m.v===todayMood)?.l}</div>}
+          </div>
+          {/* Water */}
+          <div className="glass" style={{padding:12,borderRadius:16}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:6}}>💧 Water ({todayWater}/8)</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+              {Array.from({length:8}).map((_,i)=>(
+                <button key={i} onClick={()=>setWater(prev=>({...prev,[today]:i<todayWater?i:i+1}))} className="bp" style={{width:22,height:22,borderRadius:6,border:`1.5px solid ${i<todayWater?T.accent2:`${T.accent2}33`}`,background:i<todayWater?`${T.accent2}30`:"transparent",cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {i<todayWater?"💧":"○"}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Hero progress */}
+        <div style={{margin:"0 20px 12px"}}>
+          <div className="glass2" style={{padding:"16px 18px",borderRadius:22,background:`linear-gradient(135deg,${T.accent}18,${T.accent2}0e)`,border:`1px solid ${T.accent}28`,position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:-30,right:-20,width:120,height:120,borderRadius:"50%",background:`radial-gradient(circle,${T.accent}22,transparent 70%)`}}/>
+            <div style={{display:"flex",alignItems:"center",gap:16,position:"relative"}}>
+              <div style={{position:"relative",flexShrink:0,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>
+                <Ring pct={dayPct} size={72} sw={6} color={T.accent}/>
+                <div style={{position:"absolute",textAlign:"center"}}><span style={{fontSize:fs+3,fontWeight:900,color:T.accent}}>{dayPct}%</span></div>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:fs+4,fontWeight:800,letterSpacing:"-0.025em",color:T.text}}>Today's Flow</div>
+                <div style={{fontSize:fs-2,color:T.muted,marginTop:2}}>{done}/{habits.length} habits complete</div>
+                <div style={{display:"flex",gap:12,marginTop:8}}>
+                  <Stat label="Total Logs" value={totalLogs} color={T.accent} mutedColor={T.muted}/>
+                  <Stat label="Best Streak" value={`${maxStreak}d`} color={T.accent3} mutedColor={T.muted}/>
+                  <Stat label="This Week" value={`${last7Days().filter(d=>habits.some(h=>(h.logs[d]||0)>=h.target)).length}d`} color={T.accent2} mutedColor={T.muted}/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 7-day sparkline */}
+        <div style={{padding:"0 20px 12px"}}>
+          <div className="glass" style={{padding:14,borderRadius:18}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8}}>7-Day Completion Trend</div>
+            <LineChart data={last7Days().map(d=>habits.length?Math.round(habits.filter(h=>(h.logs[d]||0)>=h.target).length/habits.length*100):0)} color={T.accent} height={60}/>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+              {last7Days().map((d,i)=><span key={i} style={{fontSize:8,color:T.muted,flex:1,textAlign:"center"}}>{new Date(d).toLocaleDateString("en-IN",{weekday:"narrow"})}</span>)}
+            </div>
+          </div>
+        </div>
+
+        {/* Habits */}
+        <div style={{padding:"0 20px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:11}}>
+            <div style={{fontSize:fs+1,fontWeight:700,letterSpacing:"-0.02em",color:T.text}}>Daily Habits</div>
+            <button onClick={()=>setModal({type:"habit",data:null})} className="bp" style={{padding:"7px 14px",borderRadius:11,background:`linear-gradient(135deg,${T.accent},${T.accent}aa)`,border:"none",color:"#000",fontSize:fs-2,fontWeight:700,cursor:"pointer"}}>+ Add</button>
+          </div>
+          {habits.length===0&&<div className="glass" style={{padding:28,textAlign:"center",borderRadius:20}}><div style={{fontSize:36}}>🌱</div><div style={{color:T.muted,marginTop:8,fontSize:fs-1}}>Add your first habit!</div></div>}
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {todayH.map(h=>{
+              const isDone=h.count>=h.target;
+              const pct=Math.min(h.count/h.target*100,100);
+              return(
+                <div key={h.id} className={`hcard glass${h.streak>=3?" streak-glow":""}${flashId===h.id?" done-flash":""}`} style={{padding:`${pad}px`,borderRadius:16,border:isDone?`1px solid ${h.color}44`:"1px solid "+T.border,transition:"all .25s"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:11}}>
+                    <div style={{width:44,height:44,borderRadius:13,background:`${h.color}16`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,border:`1.5px solid ${h.color}${isDone?"55":"18"}`,boxShadow:isDone?`0 0 14px ${h.color}44`:"none",transition:"all .3s"}}>
+                      {h.icon}
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                        <span style={{fontWeight:600,fontSize:fs}}>{h.name}</span>
+                        <div style={{display:"flex",gap:5,alignItems:"center"}}>
+                          {h.streak>0&&<span style={{fontSize:fs-3,color:"#fbbf24",fontWeight:700}}>🔥{h.streak}</span>}
+                          {h.reminder&&<span style={{fontSize:fs-4,color:T.muted}}>⏰{h.reminder}</span>}
+                        </div>
+                      </div>
+                      <div style={{height:4,background:`${T.border}`,borderRadius:10,marginTop:7,overflow:"hidden"}}>
+                        <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${h.color}88,${h.color})`,borderRadius:10,transition:"width .5s cubic-bezier(.4,0,.2,1)",boxShadow:`0 0 6px ${h.color}55`}}/>
+                      </div>
+                      <div style={{fontSize:fs-4,color:T.muted,marginTop:3}}>{h.count}/{h.target} · {h.category}</div>
+                    </div>
+                    <div style={{display:"flex",gap:5,flexShrink:0}}>
+                      <button onClick={()=>handleLog(h.id)} disabled={isDone} className="logbtn" style={{width:34,height:34,borderRadius:10,background:isDone?`${h.color}28`:`${h.color}18`,border:`1.5px solid ${h.color}${isDone?"55":"30"}`,cursor:isDone?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:isDone?"#fff":h.color,fontSize:14,fontWeight:800,transition:"all .2s",position:"relative",overflow:"hidden"}}>
+                        {ripple===h.id&&<span style={{position:"absolute",inset:0,borderRadius:10,background:h.color,opacity:0.35}} className="ripple"/>}
+                        {isDone?"✓":"+"}
+                      </button>
+                      <button onClick={()=>setModal({type:"habit",data:h})} style={{width:34,height:34,borderRadius:10,background:T.glass,border:`1px solid ${T.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12}}>✏️</button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Pillars mini */}
+        <div style={{padding:"12px 20px 0"}}>
+          <div style={{fontSize:fs+1,fontWeight:700,letterSpacing:"-0.02em",color:T.text,marginBottom:10}}>Ultimate Pillars</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+            {Object.entries(PILLARS).map(([k,p])=>{
+              const pct=pillarPct[k]||0,un=pct>=80;
+              return(
+                <div key={k} className="glass" style={{padding:"12px 8px",borderRadius:16,textAlign:"center",border:un?`1.5px solid ${p.glow}44`:T.border,background:un?`${p.glow}0d`:undefined,transition:"all .3s"}}>
+                  <div style={{position:"relative",display:"inline-flex",alignItems:"center",justifyContent:"center"}}>
+                    <Ring pct={pct} size={50} sw={4} color={p.glow}/>
+                    <div style={{position:"absolute",fontSize:18}}>{un?p.icon:"🔒"}</div>
+                  </div>
+                  <div style={{fontSize:9,fontWeight:700,marginTop:6,textTransform:"uppercase",letterSpacing:"0.05em",color:un?p.glow:T.muted}}>{p.label}</div>
+                  <div style={{fontSize:8,color:un?"#a3e635":T.muted,marginTop:1}}>{un?"✨ Unlocked":`${pct}%`}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Strict toggle */}
+        <div style={{padding:"12px 20px 0"}}>
+          <div className="glass" style={{padding:"12px 15px",borderRadius:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <div style={{fontWeight:700,fontSize:fs-1,display:"flex",alignItems:"center",gap:6,color:T.text}}>⚡ Strict Mode <Tag color={T.accent3}>Hardcore</Tag></div>
+              <div style={{fontSize:fs-3,color:T.muted,marginTop:2}}>Brutal accountability</div>
+            </div>
+            <button onClick={()=>{setStrict(v=>!v);showToast(strict?"Relaxed ✌️":"⚡ No excuses!");}} className="bp" style={{width:48,height:26,borderRadius:13,background:strict?`linear-gradient(135deg,#fb923c,#ef4444)`:T.glass,border:strict?"none":`1px solid ${T.border}`,cursor:"pointer",position:"relative",transition:"all .3s"}}>
+              <div style={{width:18,height:18,borderRadius:"50%",background:"#fff",position:"absolute",top:4,left:strict?26:4,transition:"left .3s",boxShadow:"0 2px 6px #0006"}}/>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── ANALYTICS ──────────────────────────────────────────────── */
+  function Analytics() {
+    const [tab,setTab]=useState("overview");
+    const tabs=["overview","habits","mood","heatmap","radar"];
+
+    const w7=last7Days().map(d=>({d,pct:habits.length?Math.round(habits.filter(h=>(h.logs[d]||0)>=h.target).length/habits.length*100):0}));
+    const w30=last30Days().map(d=>habits.length?Math.round(habits.filter(h=>(h.logs[d]||0)>=h.target).length/habits.length*100):0);
+    const m6=Array.from({length:6},(_,i)=>{
+      const d=new Date();d.setMonth(d.getMonth()-(5-i));
+      const ym=d.toISOString().slice(0,7);
+      return{lbl:d.toLocaleDateString("en-IN",{month:"short"}),logs:habits.reduce((s,h)=>s+Object.entries(h.logs).filter(([k])=>k.startsWith(ym)).reduce((a,[,v])=>a+v,0),0)};
+    });
+    const habitBreak=[...habits].map(h=>({...h,total:Object.values(h.logs).reduce((s,v)=>s+v,0)})).sort((a,b)=>b.total-a.total);
+    const maxT=Math.max(...habitBreak.map(h=>h.total),1);
+
+    const moodData=last7Days().map(d=>moods[d]||0);
+    const avgMood=(moodData.filter(v=>v>0).reduce((s,v)=>s+v,0)/Math.max(moodData.filter(v=>v>0).length,1)).toFixed(1);
+
+    const heatData=habits.reduce((acc,h)=>{Object.entries(h.logs).forEach(([d,v])=>{ acc[d]=(acc[d]||0)+v; });return acc;},{});
+
+    const catCounts=allCats.map(c=>habits.filter(h=>h.category===c).length);
+    const radarVals=allCats.slice(0,6).map(c=>{
+      const ch=habits.filter(h=>h.category===c);
+      if(!ch.length)return 0;
+      const avg=ch.reduce((s,h)=>{
+        const logs7=last7Days().filter(d=>(h.logs[d]||0)>=h.target).length;
+        return s+logs7/7*100;
+      },0)/ch.length;
+      return Math.round(avg);
+    });
+
+    const perfDays=last30Days().filter(d=>habits.length>0&&habits.every(h=>(h.logs[d]||0)>=h.target)).length;
+    const totalStreakDays=habits.reduce((s,h)=>s+h.streak,0);
+
+    return (
+      <div className="page stagger">
+        <div style={{padding:"24px 20px 14px"}}>
+          <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",color:T.text}}>Analytics 📊</div>
+          <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>Deep insights into your patterns</div>
+        </div>
+
+        {/* Tab bar */}
+        <div style={{padding:"0 20px 14px",display:"flex",gap:6,overflowX:"auto"}}>
+          {tabs.map(t=>(
+            <button key={t} onClick={()=>setTab(t)} className={`bp glass ${tab===t?"tab-active":""}`} style={{padding:"6px 12px",borderRadius:10,border:`1px solid ${tab===t?T.accent+"44":T.border}`,cursor:"pointer",fontSize:11,fontWeight:600,whiteSpace:"nowrap",color:tab===t?T.accent:T.muted,background:tab===t?`${T.accent}18`:T.glass,transition:"all .18s",fontFamily:"'Outfit',sans-serif"}}>
+              {t.charAt(0).toUpperCase()+t.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {tab==="overview"&&(
+          <div style={{padding:"0 20px"}}>
+            {/* KPI row */}
+            <div className="glass" style={{padding:16,borderRadius:18,display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginBottom:10}}>
+              <Stat label="Total Logs" value={totalLogs} color={T.accent} mutedColor={T.muted}/>
+              <Stat label="Perfect Days" value={perfDays} color={T.accent2} mutedColor={T.muted}/>
+              <Stat label="Best Streak" value={`${maxStreak}d`} color={T.accent3} mutedColor={T.muted}/>
+              <Stat label="Streak Days" value={totalStreakDays} color="#fbbf24" mutedColor={T.muted}/>
+            </div>
+            {/* 30-day line */}
+            <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>30-Day Completion %</div>
+              <LineChart data={w30} color={T.accent} height={80}/>
+            </div>
+            {/* Monthly bars */}
+            <div className="glass" style={{padding:16,borderRadius:18}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Monthly Activity</div>
+              <BarChart data={m6.map(m=>m.logs)} colors={[T.accent,T.accent2,T.accent3,T.accent,T.accent2,T.accent3]} height={80} labels={m6.map(m=>m.lbl)}/>
+            </div>
+          </div>
+        )}
+
+        {tab==="habits"&&(
+          <div style={{padding:"0 20px"}}>
+            <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Habit Completion (7d avg)</div>
+              <BarChart data={habitBreak.map(h=>{const logs=last7Days().filter(d=>(h.logs[d]||0)>=h.target).length;return Math.round(logs/7*100);})} colors={habitBreak.map(h=>h.color)} height={80} labels={habitBreak.map(h=>h.icon)}/>
+            </div>
+            {habitBreak.map(h=>{
+              const l7=last7Days().filter(d=>(h.logs[d]||0)>=h.target).length;
+              const l30=last30Days().filter(d=>(h.logs[d]||0)>=h.target).length;
+              return(
+                <div key={h.id} className="glass" style={{padding:14,borderRadius:16,marginBottom:8}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                    <span style={{fontSize:22}}>{h.icon}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontWeight:700,fontSize:fs}}>{h.name}</div>
+                      <Tag color={h.color}>{h.category}</Tag>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontSize:fs+1,fontWeight:800,color:h.color}}>{h.total}</div>
+                      <div style={{fontSize:9,color:T.muted}}>total logs</div>
+                    </div>
+                  </div>
+                  <LineChart data={last7Days().map(d=>Math.min((h.logs[d]||0)/h.target*100,100))} color={h.color} height={40} showDots={false}/>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginTop:8}}>
+                    <Stat label="7d %" value={`${Math.round(l7/7*100)}%`} color={h.color}/>
+                    <Stat label="30d %" value={`${Math.round(l30/30*100)}%`} color={h.color}/>
+                    <Stat label="Best" value={`${h.bestStreak||0}d`} color={h.color}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {tab==="mood"&&(
+          <div style={{padding:"0 20px"}}>
+            <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em"}}>Mood Trend (7 days)</div>
+                <div style={{fontSize:fs,fontWeight:800,color:T.accent}}>{isNaN(Number(avgMood))?"—":avgMood} avg</div>
+              </div>
+              <LineChart data={moodData} color={T.accent3} height={80}/>
+              <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+                {last7Days().map((d,i)=><span key={i} style={{fontSize:8,color:T.muted,flex:1,textAlign:"center"}}>{new Date(d).toLocaleDateString("en-IN",{weekday:"narrow"})}</span>)}
+              </div>
+            </div>
+            <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12}}>Mood Log</div>
+              {last7Days().reverse().map(d=>{
+                const m=moods[d];
+                const mo=MOOD_OPTS.find(x=>x.v===m);
+                return m?(
+                  <div key={d} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${T.border}`}}>
+                    <span style={{fontSize:fs-2,color:T.muted}}>{fmtDate(d)}</span>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <span style={{fontSize:18}}>{mo?.e}</span>
+                      <span style={{fontSize:fs-1,fontWeight:600,color:T.text}}>{mo?.l}</span>
+                    </div>
+                  </div>
+                ):null;
+              })}
+            </div>
+            {/* Mood-Habits correlation */}
+            <div className="glass" style={{padding:16,borderRadius:18}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Mood vs Completion</div>
+              <BarChart
+                data={last7Days().map(d=>{const m=moods[d]||0;const p=habits.length?Math.round(habits.filter(h=>(h.logs[d]||0)>=h.target).length/habits.length*100):0;return m*20+(p>50?10:0);})}
+                colors={last7Days().map(d=>moods[d]>=4?"#34d399":moods[d]>=3?T.accent:"#f472b6")}
+                height={70} labels={last7Days().map(d=>new Date(d).toLocaleDateString("en-IN",{weekday:"narrow"}))}
+              />
+              <div style={{fontSize:10,color:T.muted,marginTop:6}}>Green = good mood days · Pink = rough days</div>
+            </div>
+          </div>
+        )}
+
+        {tab==="heatmap"&&(
+          <div style={{padding:"0 20px"}}>
+            <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12}}>Activity Heatmap (28 days)</div>
+              <HeatmapGrid data={heatData} color={T.accent} days={28}/>
+              <div style={{display:"flex",gap:6,marginTop:10,alignItems:"center"}}>
+                <span style={{fontSize:9,color:T.muted}}>Less</span>
+                {[0.15,0.35,0.6,0.85,1].map(o=><div key={o} style={{width:12,height:12,borderRadius:3,background:T.accent,opacity:o}}/>)}
+                <span style={{fontSize:9,color:T.muted}}>More</span>
+              </div>
+            </div>
+            <div className="glass" style={{padding:16,borderRadius:18}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Weekly Completion</div>
+              <div style={{display:"flex",gap:6,alignItems:"flex-end"}}>
+                {w7.map((d,i)=>(
+                  <div key={i} style={{flex:1,textAlign:"center"}}>
+                    <div style={{height:64,borderRadius:8,background:T.glass,position:"relative",overflow:"hidden"}}>
+                      <div style={{position:"absolute",bottom:0,left:0,right:0,height:`${d.pct}%`,background:`linear-gradient(to top,${T.accent},${T.accent}55)`,borderRadius:8,transition:"height .7s",boxShadow:d.pct>0?`0 0 10px ${T.accent}44`:"none"}}/>
+                    </div>
+                    <div style={{fontSize:8,color:T.muted,marginTop:4}}>{new Date(d.d).toLocaleDateString("en-IN",{weekday:"narrow"})}</div>
+                    <div style={{fontSize:8,fontWeight:600,color:d.pct===100?"#a3e635":T.text}}>{d.pct}%</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab==="radar"&&(
+          <div style={{padding:"0 20px"}}>
+            <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12}}>Category Balance (7d)</div>
+              <div style={{display:"flex",justifyContent:"center"}}>
+                <RadarChart axes={allCats.slice(0,6)} values={radarVals} color={T.accent} size={180}/>
+              </div>
+            </div>
+            <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Category Distribution</div>
+              <div style={{display:"flex",flexDirection:"column",gap:7}}>
+                {allCats.filter(c=>habits.some(h=>h.category===c)).map(c=>{
+                  const ch=habits.filter(h=>h.category===c);
+                  const cols=[T.accent,T.accent2,T.accent3,"#fbbf24","#34d399","#f472b6","#60a5fa","#fb7185"];
+                  const ci=HABIT_CATS.indexOf(c)%cols.length;
+                  return(
+                    <div key={c} style={{display:"flex",alignItems:"center",gap:10}}>
+                      <span style={{fontSize:11,color:T.muted,width:80,textTransform:"capitalize"}}>{c}</span>
+                      <div style={{flex:1,height:6,background:T.glass,borderRadius:3,overflow:"hidden"}}>
+                        <div style={{height:"100%",width:`${ch.length/habits.length*100}%`,background:cols[ci],borderRadius:3}}/>
+                      </div>
+                      <span style={{fontSize:11,fontWeight:700,color:cols[ci],width:16,textAlign:"right"}}>{ch.length}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Spend breakdown donut */}
+            {monthExp.length>0&&(
+              <div className="glass" style={{padding:16,borderRadius:18}}>
+                <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12}}>Spend Distribution</div>
+                <div style={{display:"flex",alignItems:"center",gap:16}}>
+                  <DonutChart size={120} segments={EXP_CATS.filter(c=>monthExp.some(e=>e.category===c)).map((c,i)=>{
+                    const cols=[T.accent,T.accent2,T.accent3,"#fbbf24","#34d399","#f472b6","#60a5fa"];
+                    return{value:monthExp.filter(e=>e.category===c).reduce((s,e)=>s+e.amount,0),color:cols[i%cols.length],label:c};
+                  })}/>
+                  <div style={{flex:1,display:"flex",flexDirection:"column",gap:5}}>
+                    {EXP_CATS.filter(c=>monthExp.some(e=>e.category===c)).map((c,i)=>{
+                      const cols=[T.accent,T.accent2,T.accent3,"#fbbf24","#34d399","#f472b6","#60a5fa"];
+                      const tot=monthExp.filter(e=>e.category===c).reduce((s,e)=>s+e.amount,0);
+                      return(
+                        <div key={c} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                          <div style={{display:"flex",alignItems:"center",gap:5}}>
+                            <div style={{width:8,height:8,borderRadius:2,background:cols[i%cols.length]}}/>
+                            <span style={{fontSize:10,textTransform:"capitalize",color:T.muted}}>{c}</span>
+                          </div>
+                          <span style={{fontSize:10,fontWeight:700,color:cols[i%cols.length]}}>{fmtINR(tot)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ── FOCUS TIMER ────────────────────────────────────────────── */
+  function FocusTimer() {
+    const [running,setRunning]=useState(false);
+    const [timeLeft,setTimeLeft]=useState((focus.duration||25)*60);
+    const [dur,setDur]=useState(focus.duration||25);
+    const ref=useRef(null);
+
+    // sessions come from persistent focus state
+    const sessions=focus.sessions||[];
+
+    useEffect(()=>{
+      if(running){
+        ref.current=setInterval(()=>{
+          setTimeLeft(t=>{
+            if(t<=1){
+              setRunning(false);
+              clearInterval(ref.current);
+              const newSession={date:todayISO(),duration:dur,completed:true};
+              setFocus(f=>({...f,sessions:[...(f.sessions||[]),newSession]}));
+              showToast(`🎉 Focus session complete! (${dur} min)`);
+              return dur*60;
+            }
+            return t-1;
+          });
+        },1000);
+      } else clearInterval(ref.current);
+      return()=>clearInterval(ref.current);
+    // eslint-disable-next-line
+    },[running,dur]);
+
+    const mm=Math.floor(timeLeft/60).toString().padStart(2,"0");
+    const ss=(timeLeft%60).toString().padStart(2,"0");
+    const pct=Math.round((1-timeLeft/(dur*60))*100);
+    const todaySessions=sessions.filter(s=>s.date===todayISO());
+
+    return(
+      <div className="page stagger">
+        <div style={{padding:"24px 20px 16px"}}>
+          <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",color:T.text}}>Focus ⏱️</div>
+          <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>Deep work sessions</div>
+        </div>
+        <div style={{padding:"0 20px"}}>
+          <div className="glass2" style={{padding:28,borderRadius:24,textAlign:"center",background:`linear-gradient(135deg,${T.accent}14,${T.accent2}0a)`,border:`1px solid ${T.accent}22`,marginBottom:12}}>
+            <div style={{position:"relative",display:"inline-flex",alignItems:"center",justifyContent:"center",marginBottom:20}}>
+              <Ring pct={pct} size={160} sw={8} color={running?T.accent2:T.accent}/>
+              <div style={{position:"absolute",textAlign:"center"}}>
+                <div style={{fontSize:36,fontWeight:900,letterSpacing:"-0.04em",color:T.text,fontVariantNumeric:"tabular-nums"}}>{mm}:{ss}</div>
+                <div style={{fontSize:fs-2,color:T.muted,marginTop:2}}>{running?"Focus time":"Ready"}</div>
+              </div>
+            </div>
+            {/* Duration selector */}
+            <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:20}}>
+              {[5,10,15,25,30,45,60].map(d=>(
+                <button key={d} onClick={()=>{if(!running){setDur(d);setTimeLeft(d*60);setFocus(f=>({...f,duration:d}));} }} className="bp" style={{padding:"5px 10px",borderRadius:9,background:dur===d?`${T.accent}28`:T.glass,border:`1px solid ${dur===d?T.accent+"55":T.border}`,color:dur===d?T.accent:T.muted,fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif",transition:"all .18s"}}>
+                  {d}m
+                </button>
+              ))}
+            </div>
+            <div style={{display:"flex",gap:10,justifyContent:"center"}}>
+              <button onClick={()=>setRunning(r=>!r)} className="bp" style={{padding:"12px 28px",borderRadius:14,background:`linear-gradient(135deg,${T.accent},${T.accent}bb)`,border:"none",color:"#000",fontWeight:800,fontSize:fs,cursor:"pointer"}}>
+                {running?"⏸ Pause":"▶ Start"}
+              </button>
+              <button onClick={()=>{setRunning(false);setTimeLeft(dur*60);}} className="bp glass" style={{padding:"12px 18px",borderRadius:14,border:`1px solid ${T.border}`,color:T.muted,fontWeight:600,fontSize:fs,cursor:"pointer",background:T.glass}}>
+                ↺ Reset
+              </button>
+            </div>
+          </div>
+          {/* Today's sessions */}
+          <div className="glass" style={{padding:16,borderRadius:18,marginBottom:10}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Today's Sessions</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:12}}>
+              <Stat label="Sessions" value={todaySessions.length} color={T.accent} mutedColor={T.muted}/>
+              <Stat label="Minutes" value={todaySessions.reduce((s,x)=>s+x.duration,0)} color={T.accent2} mutedColor={T.muted}/>
+              <Stat label="Total" value={sessions.length} color={T.accent3} mutedColor={T.muted}/>
+            </div>
+            {todaySessions.length===0&&<div style={{textAlign:"center",color:T.muted,fontSize:fs-1,padding:"10px 0"}}>No sessions today yet</div>}
+            {sessions.slice(-5).reverse().map((s,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${T.border}`,fontSize:fs-1}}>
+                <span style={{color:T.muted}}>{fmtDate(s.date)}</span>
+                <span style={{color:T.accent,fontWeight:700}}>{s.duration} min ✓</span>
+              </div>
+            ))}
+          </div>
+          {/* Streak chart */}
+          {sessions.length>1&&(
+            <div className="glass" style={{padding:16,borderRadius:18}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>Focus Minutes (7 days)</div>
+              <LineChart data={last7Days().map(d=>sessions.filter(s=>s.date===d).reduce((s,x)=>s+x.duration,0))} color={T.accent2} height={60}/>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* ── JOURNAL ────────────────────────────────────────────────── */
+  function Journal() {
+    const [text,setText]=useState("");
+    const [mood,setMoodL]=useState(3);
+    const [editId,setEditId]=useState(null);
+
+    const save=()=>{
+      if(!text.trim())return;
+      if(editId){
+        setJournal(prev=>prev.map(j=>j.id===editId?{...j,text,mood,date:todayISO()}:j));
+        setEditId(null);showToast("Updated ✏️");
+      } else {
+        setJournal(prev=>[{id:Date.now(),text,mood,date:todayISO()},...prev]);
+        showToast("Saved 📝");
+      }
+      setText("");setMoodL(3);
+    };
+    const startEdit=(j)=>{setText(j.text);setMoodL(j.mood);setEditId(j.id);};
+
+    return(
+      <div className="page stagger">
+        <div style={{padding:"24px 20px 16px"}}>
+          <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",color:T.text}}>Journal 📝</div>
+          <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>Reflect & grow</div>
+        </div>
+        <div style={{padding:"0 20px"}}>
+          <div className="glass" style={{padding:16,borderRadius:18,marginBottom:12}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:10}}>{editId?"Editing Entry":"New Entry"} · {new Date().toLocaleDateString("en-IN",{day:"numeric",month:"short"})}</div>
+            <div style={{display:"flex",gap:6,marginBottom:10}}>
+              {MOOD_OPTS.map(m=>(
+                <button key={m.v} onClick={()=>setMoodL(m.v)} className="bp" style={{flex:1,padding:"6px 0",borderRadius:9,border:`1.5px solid ${mood===m.v?T.accent:"transparent"}`,background:mood===m.v?`${T.accent}22`:T.glass,cursor:"pointer",fontSize:18,display:"flex",justifyContent:"center",transition:"all .18s"}}>
+                  {m.e}
+                </button>
+              ))}
+            </div>
+            <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="How was your day? What habits went well? What can you improve?..." style={{...inp,minHeight:100,resize:"vertical",lineHeight:1.6,padding:"10px 13px"}}/>
+            <div style={{display:"flex",gap:8,marginTop:10}}>
+              <button onClick={save} className="bp" style={{flex:1,padding:"10px",borderRadius:12,background:`linear-gradient(135deg,${T.accent},${T.accent}bb)`,border:"none",color:"#000",fontWeight:700,fontSize:fs-1,cursor:"pointer"}}>{editId?"Update":"Save Entry"}</button>
+              {editId&&<button onClick={()=>{setEditId(null);setText("");setMoodL(3);}} className="bp glass" style={{padding:"10px 14px",borderRadius:12,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:fs-1,fontWeight:600,background:T.glass}}>Cancel</button>}
+            </div>
+          </div>
+          {journal.length===0&&<div className="glass" style={{padding:24,textAlign:"center",color:T.muted,borderRadius:18,fontSize:fs-1}}>No journal entries yet. Start writing!</div>}
+          {journal.map(j=>{
+            const mo=MOOD_OPTS.find(m=>m.v===j.mood);
+            return(
+              <div key={j.id} className="glass" style={{padding:14,borderRadius:16,marginBottom:8}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    <span style={{fontSize:18}}>{mo?.e}</span>
+                    <span style={{fontSize:fs-2,color:T.muted}}>{fmtDate(j.date)}</span>
+                  </div>
+                  <div style={{display:"flex",gap:6}}>
+                    <button onClick={()=>startEdit(j)} style={{background:"none",border:"none",cursor:"pointer",fontSize:13}}>✏️</button>
+                    <button onClick={()=>{setJournal(prev=>prev.filter(x=>x.id!==j.id));showToast("Deleted");}} style={{background:"none",border:"none",cursor:"pointer",fontSize:13,color:T.muted}}>✕</button>
+                  </div>
+                </div>
+                <div style={{fontSize:fs-1,color:T.text,lineHeight:1.6,opacity:0.85}}>{j.text}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  /* ── GOALS ──────────────────────────────────────────────────── */
+  function Goals() {
+    const[showF,setShowF]=useState(false);
+    const[form,setForm]=useState({title:"",pillar:"power",target:10,current:0,unit:"times"});
+    const add=()=>{
+      if(!form.title)return;
+      setGoals(prev=>[...prev,{...form,id:Date.now(),target:Number(form.target),current:Number(form.current)}]);
+      setForm({title:"",pillar:"power",target:10,current:0,unit:"times"});setShowF(false);showToast("Goal added 🎯");
+    };
+    const bump=(id,d)=>setGoals(prev=>prev.map(g=>g.id===id?{...g,current:Math.max(0,Math.min(g.current+d,g.target))}:g));
+
+    return(
+      <div className="page stagger">
+        <div style={{padding:"24px 20px 14px",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",color:T.text}}>Goals 🎯</div>
+            <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>Track your ambitions</div>
+          </div>
+          <button onClick={()=>setShowF(v=>!v)} className="bp" style={{padding:"8px 14px",borderRadius:11,background:`linear-gradient(135deg,${T.accent},${T.accent}bb)`,border:"none",color:"#000",fontSize:fs-2,fontWeight:700,cursor:"pointer"}}>+ Goal</button>
+        </div>
+        <div style={{padding:"0 20px 14px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
+            {Object.entries(PILLARS).map(([k,p])=>{
+              const pct=pillarPct[k]||0,un=pct>=80;
+              return(
+                <div key={k} className="glass" style={{padding:"13px 8px",borderRadius:18,textAlign:"center",border:un?`1.5px solid ${p.glow}44`:T.border,background:un?`${p.glow}0d`:undefined}}>
+                  <div style={{position:"relative",display:"inline-flex",alignItems:"center",justifyContent:"center"}}>
+                    <Ring pct={pct} size={58} sw={5} color={p.glow}/>
+                    <div style={{position:"absolute",fontSize:22}}>{un?p.icon:"🔒"}</div>
+                  </div>
+                  <div style={{fontSize:9,fontWeight:700,marginTop:7,textTransform:"uppercase",letterSpacing:"0.05em",color:un?p.glow:T.muted}}>{p.label}</div>
+                  <div style={{fontSize:8,color:un?"#a3e635":T.muted,marginTop:2}}>{un?"✨ Unlocked":`${pct}%`}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        {showF&&(
+          <div style={{padding:"0 20px 14px"}} className="su">
+            <div className="glass" style={{padding:16,borderRadius:18,border:`1px solid ${T.accent}28`}}>
+              <div style={{fontWeight:700,fontSize:fs+1,marginBottom:13,color:T.text}}>New Goal</div>
+              <label style={lbl}>Title</label>
+              <input style={{...inp,marginBottom:11}} value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} placeholder="e.g. Run 100km total"/>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:11}}>
+                <div><label style={lbl}>Pillar</label><select style={inp} value={form.pillar} onChange={e=>setForm(f=>({...f,pillar:e.target.value}))}><option value="power">⚡ Power</option><option value="wealth">💰 Wealth</option><option value="wisdom">🔮 Wisdom</option></select></div>
+                <div><label style={lbl}>Unit</label><input style={inp} value={form.unit} onChange={e=>setForm(f=>({...f,unit:e.target.value}))} placeholder="times, days, ₹"/></div>
+                <div><label style={lbl}>Target</label><input type="number" style={inp} value={form.target} onChange={e=>setForm(f=>({...f,target:e.target.value}))}/></div>
+                <div><label style={lbl}>Current</label><input type="number" style={inp} value={form.current} onChange={e=>setForm(f=>({...f,current:e.target.value}))}/></div>
+              </div>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={add} className="bp" style={{flex:1,padding:"10px",borderRadius:11,background:`linear-gradient(135deg,${T.accent},${T.accent}bb)`,border:"none",color:"#000",fontWeight:700,fontSize:fs-1,cursor:"pointer"}}>Save</button>
+                <button onClick={()=>setShowF(false)} className="bp glass" style={{padding:"10px 14px",borderRadius:11,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontSize:fs-1,background:T.glass}}>✕</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {["power","wealth","wisdom"].map(pillar=>{
+          const pg=goals.filter(g=>g.pillar===pillar);if(!pg.length)return null;
+          const P=PILLARS[pillar];
+          return(
+            <div key={pillar} style={{padding:"0 20px 10px"}}>
+              <div style={{fontSize:10,fontWeight:700,color:P.glow,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8,display:"flex",alignItems:"center",gap:5}}>{P.icon} {P.label} Goals</div>
+              {pg.map(g=>{
+                const pct=Math.min(Math.round(g.current/g.target*100),100);
+                return(
+                  <div key={g.id} className="glass" style={{padding:13,borderRadius:16,marginBottom:7}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <span style={{fontWeight:600,fontSize:fs}}>{g.title}</span>
+                      <button onClick={()=>setGoals(prev=>prev.filter(x=>x.id!==g.id))} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:13}}>✕</button>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginTop:9}}>
+                      <div style={{flex:1}}>
+                        <div style={{height:5,background:T.glass,borderRadius:3,overflow:"hidden"}}>
+                          <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${P.glow}88,${P.glow})`,borderRadius:3,transition:"width .5s",boxShadow:`0 0 7px ${P.glow}66`}}/>
+                        </div>
+                        <div style={{fontSize:10,color:T.muted,marginTop:3}}>{g.current}/{g.target} {g.unit} · {pct}%</div>
+                      </div>
+                      <div style={{display:"flex",gap:5}}>
+                        {[-1,1].map(d=>(
+                          <button key={d} onClick={()=>bump(g.id,d)} className="bp" style={{width:28,height:28,borderRadius:8,background:d>0?`${P.glow}20`:T.glass,border:`1px solid ${d>0?P.glow+"44":T.border}`,cursor:"pointer",color:d>0?P.glow:T.muted,fontWeight:800,fontSize:15,fontFamily:"'Outfit',sans-serif"}}>
+                            {d>0?"+":"−"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  /* ── ACHIEVEMENTS ───────────────────────────────────────────── */
+  function Wins() {
+    const [tab, setTab] = useState("all");
+    const ul = ach.filter(a=>a.unlocked).length;
+    const [expanded, setExpanded] = useState(null);
+
+    const RARITY_META = {
+      starter:  { label:"Starter",   color:"#94a3b8", glow:"#94a3b8", order:0 },
+      bronze:   { label:"Bronze",    color:"#cd7f32", glow:"#cd7f32", order:1 },
+      silver:   { label:"Silver",    color:"#b0b8c4", glow:"#c0c8d4", order:2 },
+      gold:     { label:"Gold",      color:"#fbbf24", glow:"#fbbf24", order:3 },
+      platinum: { label:"Platinum",  color:"#a78bfa", glow:"#a78bfa", order:4 },
+      legendary:{ label:"Legendary", color:"#f43f5e", glow:"#f43f5e", order:5 },
+    };
+
+    const PILLAR_META = {
+      power:  { color:"#fb923c", glow:"#fb923c", grad:"linear-gradient(135deg,#fb923c,#ef4444)", label:"Power",  tagline:"Forge your physical & mental limits" },
+      wealth: { color:"#a3e635", glow:"#a3e635", grad:"linear-gradient(135deg,#a3e635,#22d3ee)", label:"Wealth", tagline:"Master your money and financial discipline" },
+      wisdom: { color:"#a78bfa", glow:"#a78bfa", grad:"linear-gradient(135deg,#a78bfa,#f472b6)", label:"Wisdom", tagline:"Know thyself. Master your mind and soul" },
+    };
+
+    const TABS = [
+      {id:"all",      label:"All"},
+      {id:"pillar",   label:"🔱 Pillars"},
+      {id:"streak",   label:"🔥 Streaks"},
+      {id:"logs",     label:"💪 Logs"},
+      {id:"special",  label:"⭐ Special"},
+      {id:"focus",    label:"⏱️ Focus"},
+      {id:"journal",  label:"📝 Journal"},
+      {id:"platinum", label:"💠 Plat+"},
+    ];
+
+    const filtered = tab === "all"     ? ach.filter(a=>a.cat!=="pillar") :
+                     tab === "pillar"   ? ach.filter(a=>a.cat==="pillar") :
+                     tab === "platinum" ? ach.filter(a=>["platinum","legendary"].includes(a.rarity) && a.cat!=="pillar") :
+                                         ach.filter(a=>a.cat===tab && a.cat!=="pillar");
+
+    const sorted = [...filtered].sort((a,b)=>{
+      if (a.unlocked !== b.unlocked) return a.unlocked ? -1 : 1;
+      const ro = RARITY_META, ao=ro[a.rarity]?.order||0, bo=ro[b.rarity]?.order||0;
+      return ao - bo;
+    });
+
+    const pillarAch = ach.filter(a=>a.cat==="pillar");
+
+    // Per-pillar progress: count pillar ach unlocked vs total
+    const pillarStats = ["power","wealth","wisdom"].map(p=>({
+      p, items: pillarAch.filter(a=>a.pillar===p),
+      done: pillarAch.filter(a=>a.pillar===p&&a.unlocked).length,
+    }));
+
+    return (
+      <div className="page">
+        {/* Header */}
+        <div style={{padding:"24px 20px 0"}}>
+          <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",color:T.text}}>Achievements 🏆</div>
+          <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>{ul} of {ach.length} unlocked</div>
+        </div>
+
+        {/* Overall progress banner */}
+        <div style={{padding:"12px 20px 0"}}>
+          <div className="glass2" style={{padding:"14px 16px",borderRadius:20,background:`linear-gradient(135deg,${T.accent}14,${T.accent3}09)`,border:`1px solid ${T.accent}22`}}>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <div style={{position:"relative",flexShrink:0,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>
+                <Ring pct={Math.round(ul/ach.length*100)} size={60} sw={5} color={T.accent}/>
+                <div style={{position:"absolute",fontSize:22}}>🏆</div>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:800,fontSize:fs+2,color:T.text}}>{ul} Earned</div>
+                <div style={{fontSize:fs-2,color:T.muted,marginTop:1}}>{ach.length-ul} more to unlock</div>
+                <div style={{height:4,background:T.glass,borderRadius:2,overflow:"hidden",marginTop:7}}>
+                  <div style={{height:"100%",width:`${Math.round(ul/ach.length*100)}%`,background:`linear-gradient(90deg,${T.accent},${T.accent2})`,borderRadius:2,transition:"width .6s"}}/>
+                </div>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:4,flexShrink:0}}>
+                {Object.entries(RARITY_META).filter(([k])=>k!=="legendary").map(([k,r])=>{
+                  const cnt=ach.filter(a=>a.rarity===k&&a.unlocked).length;
+                  const tot=ach.filter(a=>a.rarity===k).length;
+                  return cnt>0?(
+                    <div key={k} style={{display:"flex",alignItems:"center",gap:4}}>
+                      <div style={{width:6,height:6,borderRadius:"50%",background:r.color,boxShadow:`0 0 4px ${r.glow}`}}/>
+                      <span style={{fontSize:9,color:r.color,fontWeight:600}}>{cnt}/{tot}</span>
+                    </div>
+                  ):null;
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ LEGENDARY PILLAR SECTION ═══ */}
+        <div style={{padding:"16px 20px 0"}}>
+          <div style={{fontSize:11,fontWeight:800,color:"#f43f5e",textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4,display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:16}}>🔱</span> LEGENDARY PILLAR CHALLENGES
+          </div>
+          <div style={{fontSize:10,color:T.muted,marginBottom:12}}>The hardest achievements in the app — designed to take months or years</div>
+
+          {pillarStats.map(({p,items,done})=>{
+            const PM = PILLAR_META[p];
+            const totalItems = items.length;
+            const pct = totalItems ? Math.round(done/totalItems*100) : 0;
+            return (
+              <div key={p} style={{marginBottom:12}}>
+                {/* Pillar header */}
+                <div style={{padding:"10px 14px",borderRadius:"14px 14px 0 0",background:PM.grad,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div>
+                    <div style={{fontWeight:900,fontSize:fs+2,color:"#000",letterSpacing:"-0.02em"}}>{PM.label} Pillar</div>
+                    <div style={{fontSize:9,color:"rgba(0,0,0,0.65)",marginTop:1}}>{PM.tagline}</div>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontWeight:800,fontSize:fs+1,color:"#000"}}>{done}/{totalItems}</div>
+                    <div style={{fontSize:9,color:"rgba(0,0,0,0.65)"}}>unlocked</div>
+                  </div>
+                </div>
+                {/* Pillar progress bar */}
+                <div style={{height:5,background:"rgba(0,0,0,0.2)"}}>
+                  <div style={{height:"100%",width:`${pct}%`,background:"rgba(255,255,255,0.6)",transition:"width .6s"}}/>
+                </div>
+                {/* Pillar achievements */}
+                <div style={{border:`1px solid ${PM.color}28`,borderTop:"none",borderRadius:"0 0 14px 14px",overflow:"hidden"}}>
+                  {items.map((a,idx)=>{
+                    const isExpanded = expanded===a.id;
+                    const prog = Math.min(Math.round(a.progress/a.target*100),100);
+                    return (
+                      <div key={a.id} onClick={()=>setExpanded(isExpanded?null:a.id)}
+                        style={{padding:"12px 14px",background:a.unlocked?`${PM.color}12`:`rgba(0,0,0,0.25)`,borderTop:idx>0?`1px solid ${PM.color}18`:"none",cursor:"pointer",transition:"background .2s"}}>
+                        <div style={{display:"flex",alignItems:"center",gap:10}}>
+                          {/* Icon with locked state */}
+                          <div style={{width:44,height:44,borderRadius:12,background:a.unlocked?PM.grad:`rgba(255,255,255,0.05)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,boxShadow:a.unlocked?`0 0 18px ${PM.color}55`:"none",border:a.unlocked?"none":`1px solid ${PM.color}28`,transition:"all .3s"}}>
+                            {a.unlocked?a.icon:"🔒"}
+                          </div>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{display:"flex",alignItems:"center",gap:7}}>
+                              <span style={{fontWeight:800,fontSize:fs,color:a.unlocked?PM.color:T.text}}>{a.title}</span>
+                              {a.unlocked&&<span style={{fontSize:9,padding:"2px 7px",borderRadius:10,background:`${PM.color}22`,color:PM.color,fontWeight:700,letterSpacing:"0.05em"}}>✓ DONE</span>}
+                              {!a.unlocked&&<span style={{fontSize:9,padding:"2px 7px",borderRadius:10,background:"rgba(244,63,94,0.15)",color:"#f43f5e",fontWeight:700,letterSpacing:"0.04em"}}>LEGENDARY</span>}
+                            </div>
+                            <div style={{fontSize:10,color:T.muted,marginTop:2,lineHeight:1.4}}>{a.desc}</div>
+                            {/* Progress bar */}
+                            <div style={{height:4,background:"rgba(255,255,255,0.07)",borderRadius:2,overflow:"hidden",marginTop:7}}>
+                              <div style={{height:"100%",width:`${prog}%`,background:`linear-gradient(90deg,${PM.color}77,${PM.color})`,borderRadius:2,transition:"width .5s",boxShadow:`0 0 6px ${PM.color}66`}}/>
+                            </div>
+                            <div style={{fontSize:9,color:T.muted,marginTop:2}}>
+                              {a.progress.toLocaleString()}/{a.target.toLocaleString()} · {prog}%
+                              {!a.unlocked&&<span style={{color:"#f43f5e",marginLeft:6}}>· months/years to unlock</span>}
+                            </div>
+                          </div>
+                          <div style={{fontSize:10,color:T.muted,flexShrink:0}}>{isExpanded?"▲":"▼"}</div>
+                        </div>
+                        {/* Expanded lore */}
+                        {isExpanded&&a.lore&&(
+                          <div style={{marginTop:10,padding:"10px 12px",borderRadius:10,background:`${PM.color}10`,border:`1px solid ${PM.color}28`}}>
+                            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:5}}>⚔️ The Challenge</div>
+                            <div style={{fontSize:11,color:T.text,lineHeight:1.6,fontStyle:"italic"}}>{a.lore}</div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Divider */}
+        <div style={{margin:"16px 20px",height:1,background:T.border}}/>
+
+        {/* Regular achievements section */}
+        <div style={{padding:"0 20px 8px"}}>
+          <div style={{fontSize:11,fontWeight:700,color:T.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:12}}>All Achievements ({ach.filter(a=>a.cat!=="pillar").length})</div>
+
+          {/* Tab bar */}
+          <div style={{display:"flex",gap:5,overflowX:"auto",marginBottom:14,paddingBottom:2}}>
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)} className="bp" style={{padding:"5px 11px",borderRadius:9,border:`1px solid ${tab===t.id?T.accent+"55":T.border}`,background:tab===t.id?`${T.accent}20`:T.glass,color:tab===t.id?T.accent:T.muted,cursor:"pointer",fontSize:10,fontWeight:600,whiteSpace:"nowrap",fontFamily:"'Outfit',sans-serif",transition:"all .18s"}}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Achievement grid */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            {sorted.map((a,idx)=>{
+              const RM = RARITY_META[a.rarity]||RARITY_META.bronze;
+              const prog = Math.min(Math.round(a.progress/a.target*100),100);
+              return (
+                <div key={a.id} className={`glass${a.unlocked?" ach-unlocked":""}`} style={{
+                  padding:"13px 11px",
+                  borderRadius:16,
+                  border: a.unlocked ? `1.5px solid ${RM.color}55` : T.border,
+                  opacity: a.unlocked ? 1 : 0.55,
+                  background: a.unlocked ? `${RM.color}0a` : undefined,
+                  position:"relative",overflow:"hidden",
+                  transition:"all .25s",
+                  animation: a.unlocked ? `achGlow 2.4s ease-in-out infinite` : undefined,
+                }}>
+                  {/* Rarity glow on unlock */}
+                  {a.unlocked&&<div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${RM.color},transparent)`}}/>}
+                  {a.unlocked&&<div style={{position:"absolute",top:8,right:8,width:6,height:6,borderRadius:"50%",background:RM.color,boxShadow:`0 0 6px ${RM.glow}`}}/>}
+
+                  <div style={{fontSize:30,lineHeight:1,marginBottom:7}} className={a.unlocked?"pop-in":undefined}>{a.unlocked?a.icon:"🔒"}</div>
+
+                  {/* Rarity badge */}
+                  <div style={{marginBottom:5}}>
+                    <span style={{fontSize:8,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",padding:"2px 6px",borderRadius:6,background:`${RM.color}18`,color:RM.color,border:`1px solid ${RM.color}30`}}>
+                      {RM.label}
+                    </span>
+                  </div>
+
+                  <div style={{fontWeight:700,fontSize:fs-1,color:a.unlocked?RM.color:T.text,lineHeight:1.25,marginBottom:3}}>{a.title}</div>
+                  <div style={{fontSize:9,color:T.muted,lineHeight:1.4,marginBottom:8}}>{a.desc}</div>
+
+                  {/* Progress bar */}
+                  <div style={{height:3,background:T.glass,borderRadius:2,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${prog}%`,background:`linear-gradient(90deg,${RM.color}66,${RM.color})`,borderRadius:2,transition:"width .5s"}}/>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",marginTop:3}}>
+                    <span style={{fontSize:8,color:T.muted}}>{a.progress.toLocaleString()}/{a.target.toLocaleString()}</span>
+                    <span style={{fontSize:8,color:a.unlocked?RM.color:T.muted,fontWeight:700}}>{a.unlocked?"✓ DONE":`${prog}%`}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {sorted.length===0&&(
+            <div className="glass" style={{padding:24,textAlign:"center",color:T.muted,borderRadius:16,gridColumn:"1/-1"}}>
+              No achievements in this category yet
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* ── SPEND LENS ─────────────────────────────────────────────── */
+  function Spend() {
+    const[showF,setShowF]=useState(false);
+    const[form,setForm]=useState({amount:"",description:"",category:"food",date:today,notes:"",essential:false});
+    const[filterCat,setFilterCat]=useState("all");
+
+    const add=()=>{
+      if(!form.amount||!form.description)return;
+      setExp(prev=>[{...form,id:Date.now(),amount:Number(form.amount)},...prev]);
+      setGoals(prev=>prev.map(g=>g.pillar==="wealth"?{...g,current:Math.min(g.current+1,g.target)}:g));
+      setForm({amount:"",description:"",category:"food",date:today,notes:"",essential:false});
+      setShowF(false);showToast("Expense logged 💰");
+    };
+    const budPct=Math.min(Math.round(totalSpent/budget*100),100);
+    const catCols=["#fb923c",T.accent2,T.accent3,"#fbbf24","#34d399","#f472b6","#60a5fa","#94a3b8"];
+    const catBreak=EXP_CATS.map((c,i)=>({cat:c,total:monthExp.filter(e=>e.category===c).reduce((s,e)=>s+e.amount,0),color:catCols[i]})).filter(c=>c.total>0);
+    const maxCat=Math.max(...catBreak.map(c=>c.total),1);
+    const filtered=filterCat==="all"?monthExp:monthExp.filter(e=>e.category===filterCat);
+    const spendTrend=last7Days().map(d=>expenses.filter(e=>e.date===d).reduce((s,e)=>s+e.amount,0));
+
+    return(
+      <div className="page stagger">
+        <div style={{padding:"24px 20px 14px",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",color:T.text}}>Spend Lens 💸</div>
+            <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>Money flow tracker</div>
+          </div>
+          <button onClick={()=>setShowF(v=>!v)} className="bp" style={{padding:"8px 14px",borderRadius:11,background:"linear-gradient(135deg,#059669,#0d9488)",border:"none",color:"#fff",fontSize:fs-2,fontWeight:700,cursor:"pointer"}}>+ Add</button>
+        </div>
+
+        {/* Budget card */}
+        <div style={{padding:"0 20px 12px"}}>
+          <div className="glass2" style={{padding:"15px 17px",borderRadius:20,border:budPct>90?`1.5px solid ${T.accent3}44`:T.border2,background:budPct>90?`${T.accent3}06`:undefined}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:9,color:T.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:3}}>Spent This Month</div>
+                <div style={{fontSize:fs+12,fontWeight:900,letterSpacing:"-0.04em",color:budPct>90?T.accent3:"#34d399",lineHeight:1}}>{fmtINR(totalSpent)}</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:9,color:T.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:3}}>Budget</div>
+                <div style={{display:"flex",alignItems:"center",gap:3}}>
+                  <span style={{fontSize:12,color:T.muted}}>₹</span>
+                  <input type="number" value={budget} onChange={e=>setBudget(Number(e.target.value))} style={{background:T.glass,border:`1px solid ${T.border}`,borderRadius:9,padding:"3px 9px",color:T.text,fontSize:fs,fontWeight:800,width:90,textAlign:"right",fontFamily:"'Outfit',sans-serif"}}/>
+                </div>
+              </div>
+            </div>
+            <div style={{height:7,background:T.glass,borderRadius:4,overflow:"hidden"}}>
+              <div style={{height:"100%",width:`${budPct}%`,background:budPct>90?"linear-gradient(90deg,#f472b6,#ef4444)":budPct>70?"linear-gradient(90deg,#fbbf24,#f59e0b)":"linear-gradient(90deg,#34d399,#059669)",borderRadius:4,transition:"width .6s",boxShadow:budPct>90?"0 0 10px #f472b688":"0 0 8px #34d39966"}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:7}}>
+              <Tag color={budPct>90?T.accent3:budPct>70?"#fbbf24":"#34d399"}>{budPct}% used</Tag>
+              <div style={{fontSize:10,color:totalSpent>budget?T.accent3:T.muted}}>
+                {totalSpent>budget?`Over by ${fmtINR(totalSpent-budget)}`:`${fmtINR(budget-totalSpent)} remaining`}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Spend trend */}
+        <div style={{padding:"0 20px 12px"}}>
+          <div className="glass" style={{padding:14,borderRadius:18}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:8}}>Daily Spend (7 days)</div>
+            <LineChart data={spendTrend} color="#34d399" height={55}/>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+              {last7Days().map((d,i)=><span key={i} style={{fontSize:8,color:T.muted,flex:1,textAlign:"center"}}>{new Date(d).toLocaleDateString("en-IN",{weekday:"narrow"})}</span>)}
+            </div>
+          </div>
+        </div>
+
+        {showF&&(
+          <div style={{padding:"0 20px 12px"}} className="su">
+            <div className="glass" style={{padding:16,borderRadius:18,border:`1px solid #34d39928`}}>
+              <div style={{fontWeight:700,fontSize:fs+1,marginBottom:13,color:T.text}}>New Expense</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+                <div><label style={lbl}>Amount (₹)</label><input type="number" style={inp} value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="0"/></div>
+                <div><label style={lbl}>Date</label><input type="date" style={inp} value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))}/></div>
+              </div>
+              <label style={lbl}>Description</label>
+              <input style={{...inp,marginBottom:10}} value={form.description} onChange={e=>setForm(f=>({...f,description:e.target.value}))} placeholder="What did you spend on?"/>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+                <div><label style={lbl}>Category</label><select style={inp} value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>{EXP_CATS.map(c=><option key={c} value={c}>{EXP_EMOJI[c]} {c}</option>)}</select></div>
+                <div><label style={lbl}>Notes</label><input style={inp} value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="Optional"/></div>
+              </div>
+              <label style={{display:"flex",alignItems:"center",gap:7,cursor:"pointer",marginBottom:12,fontSize:fs-2,color:T.muted}}>
+                <input type="checkbox" checked={form.essential} onChange={e=>setForm(f=>({...f,essential:e.target.checked}))} style={{accentColor:"#34d399",width:13,height:13}}/> Essential expense
+              </label>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={add} className="bp" style={{flex:1,padding:"10px",borderRadius:11,background:"linear-gradient(135deg,#059669,#0d9488)",border:"none",color:"#fff",fontWeight:700,fontSize:fs-1,cursor:"pointer"}}>Save</button>
+                <button onClick={()=>setShowF(false)} className="bp glass" style={{padding:"10px 14px",borderRadius:11,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",background:T.glass}}>✕</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Category breakdown with donut */}
+        {catBreak.length>0&&(
+          <div style={{padding:"0 20px 12px"}}>
+            <div className="glass" style={{padding:16,borderRadius:18}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:12}}>Breakdown</div>
+              <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:14}}>
+                <DonutChart size={100} segments={catBreak}/>
+                <div style={{flex:1}}>
+                  {catBreak.map(c=>(
+                    <div key={c.cat} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+                      <div style={{display:"flex",alignItems:"center",gap:5}}>
+                        <div style={{width:7,height:7,borderRadius:2,background:c.color}}/>
+                        <span style={{fontSize:10,textTransform:"capitalize",color:T.muted}}>{c.cat}</span>
+                      </div>
+                      <span style={{fontSize:10,fontWeight:700,color:c.color}}>{fmtINR(c.total)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {catBreak.map(c=>(
+                <div key={c.cat} style={{marginBottom:8}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}}>
+                    <span style={{display:"flex",alignItems:"center",gap:5}}>{EXP_EMOJI[c.cat]} <span style={{textTransform:"capitalize"}}>{c.cat}</span></span>
+                    <span style={{fontWeight:700,color:c.color}}>{fmtINR(c.total)}</span>
+                  </div>
+                  <div style={{height:4,background:T.glass,borderRadius:3,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${(c.total/maxCat)*100}%`,background:`linear-gradient(90deg,${c.color}77,${c.color})`,borderRadius:3,transition:"width .5s",boxShadow:`0 0 5px ${c.color}44`}}/>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Filter + transactions */}
+        <div style={{padding:"0 20px"}}>
+          <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:9}}>Transactions</div>
+          <div style={{display:"flex",gap:6,overflowX:"auto",marginBottom:10,paddingBottom:2}}>
+            {["all",...EXP_CATS].map(c=>(
+              <button key={c} onClick={()=>setFilterCat(c)} className="bp" style={{padding:"5px 11px",borderRadius:9,border:`1px solid ${filterCat===c?T.accent+"55":T.border}`,background:filterCat===c?`${T.accent}18`:T.glass,color:filterCat===c?T.accent:T.muted,cursor:"pointer",fontSize:10,fontWeight:600,whiteSpace:"nowrap",fontFamily:"'Outfit',sans-serif",transition:"all .18s"}}>
+                {c==="all"?"All":EXP_EMOJI[c]+" "+c}
+              </button>
+            ))}
+          </div>
+          {filtered.length===0&&<div className="glass" style={{padding:20,textAlign:"center",color:T.muted,borderRadius:16,fontSize:fs-1}}>No transactions</div>}
+          <div style={{display:"flex",flexDirection:"column",gap:7}}>
+            {filtered.slice(0,20).map(e=>{
+              const ci=EXP_CATS.indexOf(e.category);
+              const col=catCols[ci]||T.accent;
+              return(
+                <div key={e.id} className="glass" style={{padding:"11px 13px",borderRadius:14,display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{width:40,height:40,borderRadius:12,background:`${col}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0,border:`1px solid ${col}28`}}>
+                    {EXP_EMOJI[e.category]||"💸"}
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:600,fontSize:fs-1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",color:T.text}}>{e.description}</div>
+                    <div style={{fontSize:9,color:T.muted,marginTop:2,display:"flex",alignItems:"center",gap:5}}><span>{fmtDate(e.date)}</span>·<Tag color={col}>{e.category}</Tag>{e.essential&&<Tag color="#34d399">essential</Tag>}</div>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:7,flexShrink:0}}>
+                    <div style={{fontSize:fs,fontWeight:800,color:T.accent3}}>{fmtINR(e.amount)}</div>
+                    <button onClick={()=>setExp(prev=>prev.filter(x=>x.id!==e.id))} style={{background:"none",border:"none",cursor:"pointer",color:T.muted,fontSize:14}}>✕</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── UI CUSTOMIZER ──────────────────────────────────────────── */
+  function UICustomizer() {
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"flex-end",justifyContent:"center",zIndex:300,backdropFilter:"blur(12px)"}} onClick={()=>setShowUI(false)}>
+        <div className="sheet" style={{background:T.surface,borderRadius:"22px 22px 0 0",padding:"20px 20px 40px",width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto",border:`1px solid ${T.border}`,borderBottom:"none"}} onClick={e=>e.stopPropagation()}>
+          <div style={{width:36,height:4,borderRadius:2,background:T.border,margin:"0 auto 18px"}}/>
+          <div style={{fontWeight:900,fontSize:fs+5,marginBottom:4,letterSpacing:"-0.03em",color:T.text}}>Customize UI</div>
+          <div style={{fontSize:fs-2,color:T.muted,marginBottom:18}}>Make it yours</div>
+          <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Theme</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:18}}>
+            {Object.entries(THEMES).map(([k,th])=>(
+              <button key={k} onClick={()=>setTheme(k)} className="bp" style={{padding:"12px 14px",borderRadius:14,border:`2px solid ${theme===k?th.accent:T.border}`,background:theme===k?`${th.accent}18`:T.glass,cursor:"pointer",display:"flex",alignItems:"center",gap:8,transition:"all .2s",fontFamily:"'Outfit',sans-serif"}}>
+                <span style={{fontSize:20}}>{th.emoji}</span>
+                <div style={{textAlign:"left"}}>
+                  <div style={{fontWeight:700,fontSize:fs-1,color:theme===k?th.accent:T.text}}>{th.name}</div>
+                  <div style={{display:"flex",gap:3,marginTop:3}}>
+                    {[th.accent,th.accent2,th.accent3].map((c,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+          <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>Brightness <span style={{color:T.accent,fontWeight:800}}>{brightness}%</span></div>
+          <input type="range" min="50" max="130" value={brightness} onChange={e=>setBrightness(Number(e.target.value))} style={{width:"100%",marginBottom:16,accentColor:T.accent,cursor:"pointer"}}/>
+          <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>Saturation <span style={{color:T.accent,fontWeight:800}}>{saturation}%</span></div>
+          <input type="range" min="0" max="180" value={saturation} onChange={e=>setSaturation(Number(e.target.value))} style={{width:"100%",marginBottom:6,accentColor:T.accent,cursor:"pointer"}}/>
+          <button onClick={()=>{setBrightness(100);setSaturation(100);}} className="bp" style={{fontSize:10,color:T.muted,background:"none",border:"none",cursor:"pointer",marginBottom:18,fontFamily:"'Outfit',sans-serif",textDecoration:"underline"}}>Reset to defaults</button>
+          <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Font Size</div>
+          <div style={{display:"flex",gap:8,marginBottom:18}}>
+            {Object.keys(FONT_SIZES).map(k=>(
+              <button key={k} onClick={()=>setFontSize(k)} className="bp" style={{flex:1,padding:"9px",borderRadius:11,border:`1.5px solid ${fontSize===k?T.accent+"55":T.border}`,background:fontSize===k?`${T.accent}18`:T.glass,color:fontSize===k?T.accent:T.muted,cursor:"pointer",fontWeight:600,fontSize:FONT_SIZES[k]-2,fontFamily:"'Outfit',sans-serif",transition:"all .18s"}}>
+                {k}
+              </button>
+            ))}
+          </div>
+          <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Card Density</div>
+          <div style={{display:"flex",gap:8,marginBottom:20}}>
+            {Object.keys(ACCENT_SIZES).map(k=>(
+              <button key={k} onClick={()=>setDensity(k)} className="bp" style={{flex:1,padding:"9px",borderRadius:11,border:`1.5px solid ${density===k?T.accent+"55":T.border}`,background:density===k?`${T.accent}18`:T.glass,color:density===k?T.accent:T.muted,cursor:"pointer",fontWeight:600,fontSize:fs-2,fontFamily:"'Outfit',sans-serif",transition:"all .18s"}}>
+                {k}
+              </button>
+            ))}
+          </div>
+          <div style={{padding:"12px 14px",borderRadius:14,background:`linear-gradient(135deg,${T.accent}18,${T.accent2}0e)`,border:`1px solid ${T.accent}28`,marginBottom:16}}>
+            <div style={{fontSize:fs+2,fontWeight:800,color:T.text,marginBottom:4}}>Preview</div>
+            <div style={{fontSize:fs-1,color:T.muted,marginBottom:8}}>This is how your text looks</div>
+            <div style={{display:"flex",gap:8}}>
+              {[T.accent,T.accent2,T.accent3].map((c,i)=>(
+                <div key={i} style={{flex:1,height:6,borderRadius:3,background:c,boxShadow:`0 0 8px ${c}66`}}/>
+              ))}
+            </div>
+          </div>
+          <div style={{marginBottom:16,paddingTop:16,borderTop:`1px solid ${T.border}`}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:10}}>Danger Zone</div>
+            <button onClick={()=>{setShowUI(false);setShowReset(true);}} className="bp" style={{width:"100%",padding:"11px",borderRadius:13,background:`${T.accent3}10`,border:`1px solid ${T.accent3}33`,color:T.accent3,fontWeight:700,fontSize:fs-1,cursor:"pointer",fontFamily:"'Outfit',sans-serif",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+              Reset Achievements / App Data
+            </button>
+          </div>
+          <button onClick={()=>setShowUI(false)} className="bp" style={{width:"100%",padding:"12px",borderRadius:13,background:`linear-gradient(135deg,${T.accent},${T.accent}bb)`,border:"none",color:"#000",fontWeight:800,fontSize:fs,cursor:"pointer"}}>Done</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── HABIT MODAL ── */
+  function HabitModal() {
+    const ex=modal?.data;
+    const[form,setForm]=useState(ex||{name:"",icon:"⭐",color:T.accent,category:"health",target:1,reminder:"",notes:""});
+    const[customIcon,setCustomIcon]=useState("");
+    const[newCat,setNewCat]=useState("");
+    const[showAddCat,setShowAddCat]=useState(false);
+    const[iconTab,setIconTab]=useState("activity");
+
+    const ICON_SETS={
+      activity:["🏃","🚴","🏊","🏋️","🤸","🧗","🤾","⛹️","🏇","🤺","🥊","🤼","🎿","🏄","🏌️","🎯","🎲","🎮"],
+      health:  ["💊","🩺","🏥","🩹","💉","🩸","🫀","🫁","🧬","🦷","👁️","🦴","🌡️","🧪","🍎","🥗","💧","🫖"],
+      mind:    ["🧘","🧠","🔮","📿","☯️","🕯️","🌿","🍃","🌸","🌻","🌙","⭐","✨","💫","🌅","🌄","🎋","🌾"],
+      learn:   ["📚","📖","📝","✏️","🎓","🏫","🔬","🔭","💡","🧮","📐","📏","🖊️","📒","📓","🗒️","💻","🖥️"],
+      social:  ["🤝","👥","💬","📱","📞","✉️","🎉","🥳","🎊","🫂","❤️","💕","🙌","👏","🫶","🤗","😊","🌍"],
+      money:   ["💰","💵","📈","📊","🏦","💳","🪙","💎","🏠","🚗","✈️","🎁","🛍️","🛒","💼","📋","🗂️","📁"],
+      creative:["🎨","🖌️","✏️","📸","🎵","🎸","🎹","🥁","🎤","🎭","🎬","📷","🎙️","🎺","🪗","🎻","🪕","🎶"],
+      nature:  ["🌱","🌿","🍀","🌲","🌳","🌴","🌺","🌹","🌷","🌻","🌼","🍁","🍂","🌾","🌊","🏔️","🌋","🏝️"],
+    };
+    const ICON_TAB_LABELS={activity:"🏃 Sport",health:"💊 Health",mind:"🧘 Mind",learn:"📚 Learn",social:"🤝 Social",money:"💰 Money",creative:"🎨 Create",nature:"🌿 Nature"};
+
+    const COLS=[T.accent,T.accent2,T.accent3,"#fbbf24","#34d399","#f472b6","#60a5fa","#fb7185","#a3e635","#e879f9","#f97316","#06b6d4","#8b5cf6","#ec4899","#10b981","#ef4444","#3b82f6","#84cc16"];
+
+    const addCustomCat=()=>{
+      const c=newCat.trim().toLowerCase();
+      if(!c)return;
+      if(!allCats.includes(c)){setCustomCats(prev=>[...prev,c]);}
+      setForm(f=>({...f,category:c}));
+      setNewCat("");setShowAddCat(false);
+    };
+
+    const save=()=>{
+      if(!form.name)return;
+      const icon=customIcon.trim()||form.icon;
+      if(ex){setH(prev=>prev.map(h=>h.id===ex.id?{...h,...form,icon,target:Number(form.target)}:h));showToast("Updated ✓");}
+      else{setH(prev=>[...prev,{...form,icon,id:Date.now(),logs:{},streak:0,bestStreak:0,target:Number(form.target)}]);showToast("Habit created 🌱");}
+      setModal(null);
+    };
+
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.88)",display:"flex",alignItems:"flex-end",justifyContent:"center",zIndex:200,backdropFilter:"blur(10px)"}} onClick={()=>setModal(null)}>
+        <div className="sheet" style={{background:T.surface,borderRadius:"22px 22px 0 0",padding:"20px 20px 36px",width:"100%",maxWidth:430,maxHeight:"92vh",overflowY:"auto",border:`1px solid ${T.border}`,borderBottom:"none"}} onClick={e=>e.stopPropagation()}>
+          <div style={{width:36,height:4,borderRadius:2,background:T.border,margin:"0 auto 18px"}}/>
+          <div style={{fontWeight:900,fontSize:fs+5,marginBottom:16,letterSpacing:"-0.03em",color:T.text}}>{ex?"Edit Habit ✏️":"New Habit 🌱"}</div>
+
+          <label style={lbl}>Name</label>
+          <input style={{...inp,marginBottom:13,fontSize:fs+1,fontWeight:600}} value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="e.g. Morning Run"/>
+
+          {/* Icon category tabs */}
+          <label style={lbl}>Icon</label>
+          <div style={{display:"flex",gap:5,overflowX:"auto",marginBottom:9,paddingBottom:2}}>
+            {Object.keys(ICON_SETS).map(k=>(
+              <button key={k} onClick={()=>setIconTab(k)} className="bp" style={{padding:"4px 9px",borderRadius:8,border:`1px solid ${iconTab===k?T.accent+"55":T.border}`,background:iconTab===k?`${T.accent}20`:T.glass,color:iconTab===k?T.accent:T.muted,cursor:"pointer",fontSize:10,fontWeight:600,whiteSpace:"nowrap",fontFamily:"'Outfit',sans-serif",transition:"all .15s"}}>
+                {ICON_TAB_LABELS[k]}
+              </button>
+            ))}
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:8}}>
+            {ICON_SETS[iconTab].map(ic=>(
+              <button key={ic} onClick={()=>{setForm(f=>({...f,icon:ic}));setCustomIcon("");}} style={{width:38,height:38,borderRadius:11,fontSize:19,border:`2px solid ${form.icon===ic&&!customIcon?form.color:T.border}`,background:form.icon===ic&&!customIcon?`${form.color}22`:T.glass,cursor:"pointer",transition:"all .14s"}}>
+                {ic}
+              </button>
+            ))}
+          </div>
+          {/* Custom emoji input */}
+          <div style={{display:"flex",gap:7,alignItems:"center",marginBottom:13}}>
+            <div style={{fontSize:10,color:T.muted,fontWeight:600,letterSpacing:"0.06em",textTransform:"uppercase",whiteSpace:"nowrap"}}>Custom:</div>
+            <input value={customIcon} onChange={e=>setCustomIcon(e.target.value)} placeholder="Type any emoji..." maxLength={2} style={{...inp,width:140,fontSize:fs+2,textAlign:"center"}}/>
+            {customIcon&&<div style={{width:38,height:38,borderRadius:11,fontSize:22,display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${T.accent}`,background:`${T.accent}22`}}>{customIcon}</div>}
+          </div>
+
+          <label style={lbl}>Color</label>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:13}}>
+            {COLS.map(c=>(
+              <button key={c} onClick={()=>setForm(f=>({...f,color:c}))} style={{width:26,height:26,borderRadius:7,background:c,border:`3px solid ${form.color===c?"#fff":"transparent"}`,cursor:"pointer",transition:"all .14s",boxShadow:form.color===c?`0 0 10px ${c}`:"none"}}/>
+            ))}
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:11,marginBottom:8}}>
+            <div>
+              <label style={lbl}>Category</label>
+              <select style={inp} value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>
+                {allCats.map(c=><option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div><label style={lbl}>Daily Target</label><input type="number" min="1" style={inp} value={form.target} onChange={e=>setForm(f=>({...f,target:e.target.value}))}/></div>
+          </div>
+
+          {/* Add custom category */}
+          {showAddCat?(
+            <div style={{display:"flex",gap:7,marginBottom:11}} className="su">
+              <input value={newCat} onChange={e=>setNewCat(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addCustomCat()} placeholder="New category name..." style={{...inp,flex:1}}/>
+              <button onClick={addCustomCat} className="bp" style={{padding:"9px 12px",borderRadius:11,background:`${T.accent}22`,border:`1px solid ${T.accent}55`,color:T.accent,cursor:"pointer",fontWeight:700,fontSize:fs-1,fontFamily:"'Outfit',sans-serif"}}>Add</button>
+              <button onClick={()=>setShowAddCat(false)} style={{padding:"9px 10px",borderRadius:11,background:T.glass,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>✕</button>
+            </div>
+          ):(
+            <button onClick={()=>setShowAddCat(true)} className="bp" style={{marginBottom:11,padding:"6px 12px",borderRadius:9,background:T.glass,border:`1px dashed ${T.border}`,color:T.muted,cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:"'Outfit',sans-serif",display:"flex",alignItems:"center",gap:5}}>
+              <span style={{fontSize:14}}>+</span> Add custom category
+            </button>
+          )}
+
+          <label style={lbl}>Reminder</label>
+          <input type="time" style={{...inp,marginBottom:11}} value={form.reminder} onChange={e=>setForm(f=>({...f,reminder:e.target.value}))}/>
+          <label style={lbl}>Notes</label>
+          <input style={{...inp,marginBottom:18}} value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="Optional notes..."/>
+          <div style={{display:"flex",gap:9}}>
+            <button onClick={save} className="bp" style={{flex:1,padding:"12px",borderRadius:13,background:`linear-gradient(135deg,${form.color},${form.color}bb)`,border:"none",color:"#000",fontWeight:800,fontSize:fs,cursor:"pointer"}}>Save Habit</button>
+            {ex&&<button onClick={()=>{setH(prev=>prev.filter(h=>h.id!==ex.id));setModal(null);showToast("Deleted");}} className="bp" style={{padding:"12px 15px",borderRadius:13,background:`${T.accent3}18`,border:`1px solid ${T.accent3}28`,color:T.accent3,fontWeight:700,fontSize:fs,cursor:"pointer"}}>🗑️</button>}
+            <button onClick={()=>setModal(null)} className="bp glass" style={{padding:"12px 14px",borderRadius:13,border:`1px solid ${T.border}`,color:T.muted,fontWeight:600,fontSize:fs,cursor:"pointer",background:T.glass}}>✕</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── TASKS — EISENHOWER MATRIX ──────────────────────────────── */
+  function Tasks() {
+    const QUADS=[
+      {id:"do",      label:"Do First",    sub:"Urgent + Important",    emoji:"🔥", color:"#ef4444", desc:"Crisis, deadlines, emergencies"},
+      {id:"schedule",label:"Schedule",    sub:"Not Urgent + Important", emoji:"📅", color:"#3b82f6", desc:"Planning, relationships, growth"},
+      {id:"delegate",label:"Delegate",    sub:"Urgent + Not Important", emoji:"🤝", color:"#f59e0b", desc:"Interruptions, some meetings"},
+      {id:"eliminate",label:"Eliminate",  sub:"Not Urgent + Not Important",emoji:"🗑️",color:"#6b7280",desc:"Trivial busy-work, time-wasters"},
+    ];
+    const [showForm,setShowForm]=useState(false);
+    const [dragId,setDragId]=useState(null);
+    const [dragOver,setDragOver]=useState(null);
+    const [filterDone,setFilterDone]=useState(false);
+    const [form,setForm]=useState({title:"",notes:"",quadrant:"do",priority:"medium",dueDate:""});
+    const [editId,setEditId]=useState(null);
+
+    const addTask=()=>{
+      if(!form.title.trim())return;
+      if(editId){
+        setTasks(prev=>prev.map(t=>t.id===editId?{...t,...form}:t));
+        showToast("Task updated ✓");setEditId(null);
+      } else {
+        setTasks(prev=>[...prev,{...form,id:Date.now(),done:false,createdAt:today}]);
+        showToast("Task added 📋");
+      }
+      setForm({title:"",notes:"",quadrant:"do",priority:"medium",dueDate:""});
+      setShowForm(false);
+    };
+
+    const toggleDone=(id)=>setTasks(prev=>prev.map(t=>t.id===id?{...t,done:!t.done}:t));
+    const deleteTask=(id)=>setTasks(prev=>prev.filter(t=>t.id!==id));
+    const startEdit=(t)=>{setForm({title:t.title,notes:t.notes||"",quadrant:t.quadrant,priority:t.priority||"medium",dueDate:t.dueDate||""});setEditId(t.id);setShowForm(true);};
+    const moveTask=(id,qid)=>setTasks(prev=>prev.map(t=>t.id===id?{...t,quadrant:qid}:t));
+
+    const PRIORITY_COLORS={high:"#ef4444",medium:"#f59e0b",low:"#22c55e"};
+    const totalTasks=tasks.length;
+    const doneTasks=tasks.filter(t=>t.done).length;
+
+    return(
+      <div className="page stagger">
+        {/* Header */}
+        <div style={{padding:"24px 20px 10px",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <div style={{fontSize:fs+7,fontWeight:900,letterSpacing:"-0.04em",color:T.text}}>Matrix 🎯</div>
+            <div style={{fontSize:fs-2,color:T.muted,marginTop:3}}>Eisenhower Priority Matrix</div>
+          </div>
+          <div style={{display:"flex",gap:7,alignItems:"center"}}>
+            <button onClick={()=>setFilterDone(v=>!v)} className="bp" style={{padding:"6px 11px",borderRadius:10,background:filterDone?`${T.accent}22`:T.glass,border:`1px solid ${filterDone?T.accent+"55":T.border}`,color:filterDone?T.accent:T.muted,fontSize:11,fontWeight:600,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>
+              {filterDone?"Show All":"Hide Done"}
+            </button>
+            <button onClick={()=>{setEditId(null);setForm({title:"",notes:"",quadrant:"do",priority:"medium",dueDate:""});setShowForm(true);}} className="bp" style={{padding:"8px 14px",borderRadius:11,background:`linear-gradient(135deg,${T.accent},${T.accent}bb)`,border:"none",color:"#000",fontSize:fs-2,fontWeight:700,cursor:"pointer"}}>+ Task</button>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        {totalTasks>0&&(
+          <div style={{padding:"0 20px 14px"}}>
+            <div className="glass2" style={{padding:"12px 16px",borderRadius:18,display:"flex",alignItems:"center",gap:14}}>
+              <div style={{position:"relative",flexShrink:0,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>
+                <Ring pct={totalTasks?Math.round(doneTasks/totalTasks*100):0} size={52} sw={5} color={T.accent}/>
+                <div style={{position:"absolute",fontSize:11,fontWeight:800,color:T.accent}}>{totalTasks?Math.round(doneTasks/totalTasks*100):0}%</div>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:700,fontSize:fs,color:T.text}}>{doneTasks} of {totalTasks} tasks done</div>
+                <div style={{height:4,background:T.glass,borderRadius:2,overflow:"hidden",marginTop:6}}>
+                  <div style={{height:"100%",width:`${totalTasks?Math.round(doneTasks/totalTasks*100):0}%`,background:`linear-gradient(90deg,${T.accent},${T.accent2})`,borderRadius:2,transition:"width .6s"}}/>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add/Edit form */}
+        {showForm&&(
+          <div style={{padding:"0 20px 14px"}} className="su">
+            <div className="glass" style={{padding:16,borderRadius:18,border:`1px solid ${T.accent}28`}}>
+              <div style={{fontWeight:700,fontSize:fs+1,marginBottom:13,color:T.text}}>{editId?"Edit Task ✏️":"New Task 📋"}</div>
+              <label style={lbl}>Task Title *</label>
+              <input style={{...inp,marginBottom:11,fontWeight:600}} value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&addTask()} placeholder="What needs to be done?"/>
+              <label style={lbl}>Notes</label>
+              <input style={{...inp,marginBottom:11}} value={form.notes} onChange={e=>setForm(f=>({...f,notes:e.target.value}))} placeholder="Optional details..."/>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:11}}>
+                <div>
+                  <label style={lbl}>Quadrant</label>
+                  <select style={inp} value={form.quadrant} onChange={e=>setForm(f=>({...f,quadrant:e.target.value}))}>
+                    {QUADS.map(q=><option key={q.id} value={q.id}>{q.emoji} {q.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={lbl}>Priority</label>
+                  <select style={inp} value={form.priority} onChange={e=>setForm(f=>({...f,priority:e.target.value}))}>
+                    <option value="high">🔴 High</option>
+                    <option value="medium">🟡 Medium</option>
+                    <option value="low">🟢 Low</option>
+                  </select>
+                </div>
+              </div>
+              <label style={lbl}>Due Date</label>
+              <input type="date" style={{...inp,marginBottom:14}} value={form.dueDate} onChange={e=>setForm(f=>({...f,dueDate:e.target.value}))}/>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={addTask} className="bp" style={{flex:1,padding:"11px",borderRadius:12,background:`linear-gradient(135deg,${T.accent},${T.accent}bb)`,border:"none",color:"#000",fontWeight:800,fontSize:fs-1,cursor:"pointer"}}>{editId?"Update":"Add Task"}</button>
+                <button onClick={()=>{setShowForm(false);setEditId(null);}} className="bp glass" style={{padding:"11px 14px",borderRadius:12,border:`1px solid ${T.border}`,color:T.muted,cursor:"pointer",background:T.glass}}>✕</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Eisenhower 2×2 matrix legend */}
+        <div style={{padding:"0 20px 6px"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:2,borderRadius:16,overflow:"hidden",border:`1px solid ${T.border}`}}>
+            {/* Axis labels */}
+            <div style={{gridColumn:"1/-1",display:"grid",gridTemplateColumns:"28px 1fr 1fr",background:T.glass,padding:"4px 0"}}>
+              <div/>
+              <div style={{textAlign:"center",fontSize:9,fontWeight:700,color:"#ef4444",letterSpacing:"0.08em",textTransform:"uppercase"}}>URGENT</div>
+              <div style={{textAlign:"center",fontSize:9,fontWeight:700,color:"#6b7280",letterSpacing:"0.08em",textTransform:"uppercase"}}>NOT URGENT</div>
+            </div>
+            {[
+              {qRow:["do","schedule"],label:"IMPORTANT"},
+              {qRow:["delegate","eliminate"],label:"NOT IMPORTANT"},
+            ].map(({qRow,label},ri)=>(
+              <div key={ri} style={{gridColumn:"1/-1",display:"grid",gridTemplateColumns:"28px 1fr 1fr"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"center",background:T.glass,writingMode:"vertical-rl",textOrientation:"mixed",transform:"rotate(180deg)",fontSize:8,fontWeight:700,color:ri===0?"#3b82f6":"#6b7280",letterSpacing:"0.08em",textTransform:"uppercase",padding:"8px 2px"}}>{label}</div>
+                {qRow.map(qid=>{
+                  const Q=QUADS.find(q=>q.id===qid);
+                  const qTasks=tasks.filter(t=>t.quadrant===qid&&(filterDone?!t.done:true));
+                  return(
+                    <div key={qid}
+                      onDragOver={e=>{e.preventDefault();setDragOver(qid);}}
+                      onDrop={e=>{e.preventDefault();if(dragId)moveTask(dragId,qid);setDragId(null);setDragOver(null);}}
+                      style={{
+                        minHeight:120,padding:"8px 8px 6px",
+                        background:dragOver===qid?`${Q.color}14`:T.glass,
+                        borderLeft:`1px solid ${T.border}`,
+                        borderTop:ri===1?`1px solid ${T.border}`:"none",
+                        transition:"background .2s",
+                      }}>
+                      {/* Quadrant header */}
+                      <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:6}}>
+                        <span style={{fontSize:14}}>{Q.emoji}</span>
+                        <div>
+                          <div style={{fontSize:9,fontWeight:800,color:Q.color,textTransform:"uppercase",letterSpacing:"0.06em"}}>{Q.label}</div>
+                          <div style={{fontSize:7,color:T.muted}}>{Q.desc}</div>
+                        </div>
+                      </div>
+                      {/* Tasks in quadrant */}
+                      {qTasks.length===0&&<div style={{fontSize:9,color:T.muted,textAlign:"center",padding:"8px 0",opacity:0.5}}>Drop here</div>}
+                      {qTasks.map(t=>(
+                        <div key={t.id} draggable
+                          onDragStart={()=>setDragId(t.id)}
+                          onDragEnd={()=>{setDragId(null);setDragOver(null);}}
+                          style={{
+                            padding:"7px 8px",borderRadius:9,marginBottom:5,
+                            background:t.done?`${Q.color}08`:`${Q.color}14`,
+                            border:`1px solid ${t.done?T.border:Q.color+"33"}`,
+                            opacity:t.done?0.55:1,cursor:"grab",transition:"all .18s",
+                          }}>
+                          <div style={{display:"flex",alignItems:"flex-start",gap:5}}>
+                            <button onClick={()=>toggleDone(t.id)} style={{width:14,height:14,borderRadius:4,border:`1.5px solid ${t.done?Q.color:T.muted}`,background:t.done?Q.color:"transparent",cursor:"pointer",flexShrink:0,marginTop:1,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>
+                              {t.done&&<span style={{fontSize:8,color:"#000",fontWeight:900}}>✓</span>}
+                            </button>
+                            <div style={{flex:1,minWidth:0}}>
+                              <div style={{fontSize:10,fontWeight:600,color:T.text,textDecoration:t.done?"line-through":"none",lineHeight:1.3,wordBreak:"break-word"}}>{t.title}</div>
+                              {t.dueDate&&<div style={{fontSize:8,color:new Date(t.dueDate)<new Date()&&!t.done?"#ef4444":T.muted,marginTop:1}}>📅 {fmtDate(t.dueDate)}{new Date(t.dueDate)<new Date()&&!t.done?" ⚠️":""}</div>}
+                              {t.notes&&<div style={{fontSize:8,color:T.muted,marginTop:1,fontStyle:"italic"}}>{t.notes}</div>}
+                            </div>
+                            <div style={{display:"flex",flexDirection:"column",gap:2,flexShrink:0}}>
+                              <div style={{width:5,height:5,borderRadius:"50%",background:PRIORITY_COLORS[t.priority||"medium"]}}/>
+                              <button onClick={()=>startEdit(t)} style={{background:"none",border:"none",cursor:"pointer",fontSize:8,color:T.muted,padding:0,lineHeight:1}}>✏️</button>
+                              <button onClick={()=>deleteTask(t.id)} style={{background:"none",border:"none",cursor:"pointer",fontSize:8,color:T.muted,padding:0,lineHeight:1}}>✕</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div style={{padding:"10px 20px 0"}}>
+          <div className="glass" style={{padding:"12px 14px",borderRadius:14}}>
+            <div style={{fontSize:9,fontWeight:700,color:T.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:8}}>Quadrant Guide</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7}}>
+              {QUADS.map(q=>(
+                <div key={q.id} style={{display:"flex",alignItems:"flex-start",gap:7}}>
+                  <div style={{width:24,height:24,borderRadius:7,background:`${q.color}22`,border:`1px solid ${q.color}44`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,flexShrink:0}}>{q.emoji}</div>
+                  <div>
+                    <div style={{fontSize:10,fontWeight:700,color:q.color}}>{q.label}</div>
+                    <div style={{fontSize:8,color:T.muted,lineHeight:1.4}}>{q.sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{marginTop:10,fontSize:9,color:T.muted,fontStyle:"italic",lineHeight:1.5}}>
+              💡 Drag tasks between quadrants to reprioritize. Tap ✏️ to edit. Overdue tasks show ⚠️
+            </div>
+          </div>
+        </div>
+
+        {/* Done tasks summary */}
+        {doneTasks>0&&(
+          <div style={{padding:"10px 20px 0"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{fontSize:10,color:T.muted,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.07em"}}>✅ Completed ({doneTasks})</div>
+              <button onClick={()=>setTasks(prev=>prev.filter(t=>!t.done))} className="bp" style={{fontSize:10,color:T.accent3,background:"none",border:"none",cursor:"pointer",fontFamily:"'Outfit',sans-serif",fontWeight:600}}>Clear All Done</button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ── RESET MODAL ─────────────────────────────────────────────── */
+  function ResetModal() {
+    const [confirm,setConfirm]=useState("");
+    return(
+      <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.92)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:500,backdropFilter:"blur(16px)",padding:"20px"}} onClick={()=>setShowReset(false)}>
+        <div className="su" style={{background:T.surface,borderRadius:24,padding:"28px 24px",width:"100%",maxWidth:380,border:`1px solid ${T.border}`}} onClick={e=>e.stopPropagation()}>
+          <div style={{textAlign:"center",marginBottom:20}}>
+            <div style={{fontSize:44,marginBottom:10}}>⚠️</div>
+            <div style={{fontSize:fs+5,fontWeight:900,color:T.text,letterSpacing:"-0.03em",marginBottom:6}}>Reset App Data</div>
+            <div style={{fontSize:fs-1,color:T.muted,lineHeight:1.6}}>Choose what to reset. This cannot be undone.</div>
+          </div>
+
+          {/* Option 1: Reset Achievements only */}
+          <div className="glass" style={{padding:"14px 16px",borderRadius:16,marginBottom:10,border:`1px solid ${T.accent}22`}}>
+            <div style={{fontWeight:700,fontSize:fs,color:T.text,marginBottom:4}}>🏆 Reset Achievements Only</div>
+            <div style={{fontSize:fs-2,color:T.muted,marginBottom:10}}>Clears all achievement progress and unlocks. Habits, expenses, journal and other data stay intact.</div>
+            <button onClick={resetAchievements} className="bp" style={{width:"100%",padding:"10px",borderRadius:11,background:`${T.accent}22`,border:`1px solid ${T.accent}44`,color:T.accent,fontWeight:700,fontSize:fs-1,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>
+              Reset Achievements
+            </button>
+          </div>
+
+          {/* Option 2: Full reset with confirmation */}
+          <div className="glass" style={{padding:"14px 16px",borderRadius:16,border:`1px solid ${T.accent3}22`}}>
+            <div style={{fontWeight:700,fontSize:fs,color:T.accent3,marginBottom:4}}>💥 Full App Reset</div>
+            <div style={{fontSize:fs-2,color:T.muted,marginBottom:10}}>Deletes ALL data — habits, logs, streaks, achievements, journal, expenses, tasks, everything. App restarts fresh.</div>
+            <div style={{fontSize:fs-3,color:T.muted,marginBottom:6}}>Type <span style={{color:T.accent3,fontWeight:700}}>RESET</span> to confirm:</div>
+            <input value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Type RESET here..." style={{...inp,marginBottom:10,borderColor:confirm==="RESET"?`${T.accent3}66`:undefined}}/>
+            <button onClick={resetAll} disabled={confirm!=="RESET"} className="bp" style={{width:"100%",padding:"10px",borderRadius:11,background:confirm==="RESET"?`linear-gradient(135deg,#ef4444,#dc2626)`:`${T.accent3}10`,border:`1px solid ${confirm==="RESET"?"#ef444488":T.accent3+"22"}`,color:confirm==="RESET"?"#fff":T.muted,fontWeight:700,fontSize:fs-1,cursor:confirm==="RESET"?"pointer":"not-allowed",fontFamily:"'Outfit',sans-serif",transition:"all .2s"}}>
+              {confirm==="RESET"?"⚠️ Wipe Everything & Restart":"Enter RESET to enable"}
+            </button>
+          </div>
+
+          <button onClick={()=>setShowReset(false)} className="bp" style={{width:"100%",marginTop:12,padding:"10px",borderRadius:11,background:T.glass,border:`1px solid ${T.border}`,color:T.muted,fontWeight:600,fontSize:fs-1,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>Cancel</button>
+        </div>
+      </div>
+    );
+  }
+  const NAV=[
+    {id:"dashboard",emoji:"🏠",label:"Home"},
+    {id:"analytics",emoji:"📊",label:"Stats"},
+    {id:"focus",    emoji:"⏱️",label:"Focus"},
+    {id:"journal",  emoji:"📝",label:"Journal"},
+    {id:"tasks",    emoji:"🎯",label:"Matrix"},
+    {id:"goals",    emoji:"🚀",label:"Goals"},
+    {id:"wins",     emoji:"🏆",label:"Wins"},
+    {id:"spend",    emoji:"💸",label:"Spend"},
+  ];
+
+  const PAGES={dashboard:<Dashboard key="dashboard"/>,analytics:<Analytics key="analytics"/>,focus:<FocusTimer key="focus"/>,journal:<Journal key="journal"/>,tasks:<Tasks key="tasks"/>,goals:<Goals key="goals"/>,wins:<Wins key="wins"/>,spend:<Spend key="spend"/>};
+
+  return(
+    <>
+      <GS theme={theme}/>
+      <div className="root" style={{filter:`brightness(${brightness}%) saturate(${saturation}%)`,height:"100dvh",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+        <div className="orb1"/>
+        <div className="orb2"/>
+
+        {/* Scrollable page area */}
+        <div ref={scrollRef} style={{flex:1,overflowY:"auto",overflowX:"hidden",WebkitOverflowScrolling:"touch"}}>
+          {PAGES[page]||<Dashboard/>}
+        </div>
+
+        {/* Scrollable bottom nav */}
+        <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:430,zIndex:100}}>
+          <div style={{margin:"0 10px 10px",background:T.nav,backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)",border:`1px solid ${T.border}`,borderRadius:20,padding:"8px 4px",display:"flex",overflowX:"auto",gap:2}}>
+            {NAV.map(n=>{
+              const a=page===n.id;
+              return(
+                <button key={n.id} onClick={()=>setPage(n.id)} className={`bp${page===n.id?" nav-active":""}`} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,cursor:"pointer",color:a?T.text:T.muted,background:a?`${T.accent}25`:"transparent",border:a?`1px solid ${T.accent}38`:"1px solid transparent",borderRadius:13,padding:"6px 10px",transition:"all .18s",minWidth:52,flexShrink:0,fontFamily:"'Outfit',sans-serif"}}>
+                  <span style={{fontSize:17}}>{n.emoji}</span>
+                  <span style={{fontSize:8,fontWeight:a?700:500,letterSpacing:"0.04em",textTransform:"uppercase",whiteSpace:"nowrap"}}>{n.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Toast */}
+        {toast&&(
+          <div style={{position:"fixed",top:18,left:"50%",transform:"translateX(-50%)",background:T.surface,border:`1px solid ${T.accent}44`,color:T.text,padding:"9px 18px",borderRadius:13,fontSize:fs-1,fontWeight:600,zIndex:400,boxShadow:"0 8px 32px rgba(0,0,0,0.5)",backdropFilter:"blur(20px)",whiteSpace:"nowrap"}} className="toast-in">
+            {toast}
+          </div>
+        )}
+
+        {modal?.type==="habit"&&<HabitModal/>}
+        {showUI&&<UICustomizer/>}
+        {showReset&&<ResetModal/>}
+      </div>
+    </>
+  );
+}
+
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
